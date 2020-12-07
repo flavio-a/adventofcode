@@ -1,6 +1,7 @@
-import System.IO
-import System.Environment
-import System.Exit
+-- import System.IO
+-- import System.Environment
+-- import System.Exit
+import ReadFile
 import Data.Sort
 
 type Group = [String]
@@ -40,12 +41,7 @@ groupIntersection (x:xs) = sortedIntersect x $ groupIntersection xs
                                             | otherwise = sortedIntersect lx ys
 
 main = do
-    args <- getArgs
-    if length(args) < 1 then
-        putStrLn "Error: missing file name" >> exitWith ExitSuccess
-    else do
-        handle <- openFile (head args) ReadMode
-        content <- hGetContents handle
-        let groups = makeGroups content :: [Group]
-        putStrLn $ show $ sum $ map (length . groupUnion) $ groups
-        putStrLn $ show $ sum $ map (length . groupIntersection) $ groups
+    content <- ReadFile.readFileArg
+    let groups = makeGroups content :: [Group]
+    putStrLn $ show $ sum $ map (length . groupUnion) $ groups
+    putStrLn $ show $ sum $ map (length . groupIntersection) $ groups
