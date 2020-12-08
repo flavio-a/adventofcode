@@ -3,7 +3,7 @@ module AoCAssembly (
     Instruction (..),
     Program,
     Accumulator,
-    ProgState,
+    MachineState,
     -- parseLine,
     parseProgram,
     execInstr,
@@ -11,12 +11,13 @@ module AoCAssembly (
     ) where
 
 import Data.Array
+import Control.Monad.State.Lazy
 
 data Instruction = Nop Int | Acc Int | Jmp Int
     deriving (Eq, Ord, Show)
 type Program = Array Int Instruction
 type Accumulator = Int
-type ProgState = (Accumulator, Int)
+type MachineState = (Accumulator, Int)
 
 parseLine :: String -> Instruction
 parseLine line = case take 3 line of "nop" -> Nop v
@@ -42,7 +43,7 @@ execInstr (Acc v) acc = (acc + v, 1)
 execInstr (Jmp v) acc = (acc, v)
 
 
-execInstrState :: Instruction -> ProgState -> ProgState
+execInstrState :: Instruction -> MachineState -> MachineState
 execInstrState instr (acc, idx) = (acc', idx + delta)
     where
         (acc', delta) = execInstr instr acc

@@ -17,6 +17,7 @@ library:
   source-dirs: src
   dependencies:
     - array
+    - mtl
 
 executables:
   day6:
@@ -38,6 +39,7 @@ executables:
     source-dirs: sols/day8
     dependencies:
       - hadventofcode
+      - extra
 
 # tests:
 #   hadventofcode-test:
