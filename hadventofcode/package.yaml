@@ -15,8 +15,8 @@ dependencies:
 
 library:
   source-dirs: src
-  # dependencies:
-  #   - sort
+  dependencies:
+    - array
 
 executables:
   day6:
@@ -32,6 +32,12 @@ executables:
     dependencies:
       - hadventofcode
       - split
+
+  day8:
+    main: Day8.hs
+    source-dirs: sols/day8
+    dependencies:
+      - hadventofcode
 
 # tests:
 #   hadventofcode-test:
