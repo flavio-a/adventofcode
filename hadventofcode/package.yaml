@@ -41,6 +41,12 @@ executables:
       - hadventofcode
       - extra
 
+  day9:
+    main: Day9.hs
+    source-dirs: sols/day9
+    dependencies:
+      - hadventofcode
+
 # tests:
 #   hadventofcode-test:
 #     main:                Spec.hs
