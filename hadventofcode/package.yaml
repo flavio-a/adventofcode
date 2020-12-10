@@ -47,6 +47,13 @@ executables:
     dependencies:
       - hadventofcode
 
+  day10:
+    main: Day10.hs
+    source-dirs: sols/day10
+    dependencies:
+      - hadventofcode
+      - sort
+
 # tests:
 #   hadventofcode-test:
 #     main:                Spec.hs
