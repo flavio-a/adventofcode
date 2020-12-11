@@ -20,39 +20,47 @@ library:
     - mtl
 
 executables:
-  day6:
-    main: Day6.hs
-    source-dirs: sols/day6
-    dependencies:
-      - hadventofcode
-      - sort
+  # day6:
+  #   main: Day6.hs
+  #   source-dirs: sols/day6
+  #   dependencies:
+  #     - hadventofcode
+  #     - sort
+  #
+  # day7:
+  #   main: Day7.hs
+  #   source-dirs: sols/day7
+  #   dependencies:
+  #     - hadventofcode
+  #     - split
+  #
+  # day8:
+  #   main: Day8.hs
+  #   source-dirs: sols/day8
+  #   dependencies:
+  #     - hadventofcode
+  #     - extra
+  #
+  # day9:
+  #   main: Day9.hs
+  #   source-dirs: sols/day9
+  #   dependencies:
+  #     - hadventofcode
+  #
+  # day10:
+  #   main: Day10.hs
+  #   source-dirs: sols/day10
+  #   dependencies:
+  #     - hadventofcode
+  #     - sort
 
-  day7:
-    main: Day7.hs
-    source-dirs: sols/day7
+  day11:
+    main: Day11.hs
+    source-dirs: sols/day11
     dependencies:
       - hadventofcode
+      - array
       - split
-
-  day8:
-    main: Day8.hs
-    source-dirs: sols/day8
-    dependencies:
-      - hadventofcode
-      - extra
-
-  day9:
-    main: Day9.hs
-    source-dirs: sols/day9
-    dependencies:
-      - hadventofcode
-
-  day10:
-    main: Day10.hs
-    source-dirs: sols/day10
-    dependencies:
-      - hadventofcode
-      - sort
 
 # tests:
 #   hadventofcode-test:
