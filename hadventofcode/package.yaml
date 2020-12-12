@@ -53,14 +53,22 @@ executables:
   #   dependencies:
   #     - hadventofcode
   #     - sort
+  #
+  # day11:
+  #   main: Day11.hs
+  #   source-dirs: sols/day11
+  #   dependencies:
+  #     - hadventofcode
+  #     - array
+  #     - split
 
-  day11:
-    main: Day11.hs
-    source-dirs: sols/day11
+  day12:
+    main: Day12.hs
+    source-dirs: sols/day12
     dependencies:
       - hadventofcode
       - array
-      - split
+      - extra
 
 # tests:
 #   hadventofcode-test:
