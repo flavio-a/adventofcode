@@ -61,14 +61,23 @@ executables:
   #     - hadventofcode
   #     - array
   #     - split
+  #
+  # day12:
+  #   main: Day12.hs
+  #   source-dirs: sols/day12
+  #   dependencies:
+  #     - hadventofcode
+  #     - array
+  #     - extra
 
-  day12:
-    main: Day12.hs
-    source-dirs: sols/day12
+  day13:
+    main: Day13.hs
+    source-dirs: sols/day13
     dependencies:
       - hadventofcode
-      - array
+      - split
       - extra
+      # - array
 
 # tests:
 #   hadventofcode-test:
