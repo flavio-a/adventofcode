@@ -1,7 +1,5 @@
 import ReadFile
 import Data.List.Split
--- import Data.Array
--- import Data.Function
 import Data.Tuple.Extra
 
 parseTimes1 :: String -> [Int]
@@ -30,7 +28,6 @@ crt = foldr go (0, 1)
 main = do
     content <- ReadFile.readFileArg
     let contentlines = lines content
-    -- putStrLn $ show $ ids
     -- Part 1
     let starttime = read $ head contentlines :: Int
     let ids = parseTimes1 $ (contentlines !! 1)
