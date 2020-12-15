@@ -1,8 +1,12 @@
-module ReadFile where
+module ReadFile (
+    module Data.List.Split,
+    readFileArg)
+    where
 
 import System.IO
 import System.Environment
 import System.Exit
+import Data.List.Split (splitOn, splitOneOf)
 
 readFileArg :: IO String
 readFileArg = do

@@ -16,6 +16,7 @@ dependencies:
 library:
   source-dirs: src
   dependencies:
+    - split
     - array
     - mtl
 
@@ -77,13 +78,20 @@ executables:
   #     - hadventofcode
   #     - split
   #     - extra
+  #
+  # day14:
+  #   main: Day14.hs
+  #   source-dirs: sols/day14
+  #   dependencies:
+  #     - hadventofcode
+  #     - split
+  #     - containers
 
-  day14:
-    main: Day14.hs
-    source-dirs: sols/day14
+  day15:
+    main: Day15.hs
+    source-dirs: sols/day15
     dependencies:
       - hadventofcode
-      - split
       - containers
 
 # tests:
