@@ -86,13 +86,21 @@ executables:
   #     - hadventofcode
   #     - split
   #     - containers
+  #
+  # day15:
+  #   main: Day15.hs
+  #   source-dirs: sols/day15
+  #   dependencies:
+  #     - hadventofcode
+  #     - containers
 
-  day15:
-    main: Day15.hs
-    source-dirs: sols/day15
+  day16:
+    main: Day16.hs
+    source-dirs: sols/day16
     dependencies:
       - hadventofcode
-      - containers
+      - sort
+      - extra
 
 # tests:
 #   hadventofcode-test:
