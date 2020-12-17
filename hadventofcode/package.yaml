@@ -93,14 +93,21 @@ executables:
   #   dependencies:
   #     - hadventofcode
   #     - containers
+  #
+  # day16:
+  #   main: Day16.hs
+  #   source-dirs: sols/day16
+  #   dependencies:
+  #     - hadventofcode
+  #     - sort
+  #     - extra
 
-  day16:
-    main: Day16.hs
-    source-dirs: sols/day16
+  day17:
+    main: Day17.hs
+    source-dirs: sols/day17
     dependencies:
       - hadventofcode
-      - sort
-      - extra
+      - array
 
 # tests:
 #   hadventofcode-test:
