@@ -101,13 +101,20 @@ executables:
   #     - hadventofcode
   #     - sort
   #     - extra
+  #
+  # day17:
+  #   main: Day17.hs
+  #   source-dirs: sols/day17
+  #   dependencies:
+  #     - hadventofcode
+  #     - array
 
-  day17:
-    main: Day17.hs
-    source-dirs: sols/day17
+  day18:
+    main: Day18.hs
+    source-dirs: sols/day18
     dependencies:
       - hadventofcode
-      - array
+      - parsec
 
 # tests:
 #   hadventofcode-test:
