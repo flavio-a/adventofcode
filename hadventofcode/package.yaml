@@ -90,6 +90,8 @@ executables:
   # day15:
   #   main: Day15.hs
   #   source-dirs: sols/day15
+  #   ghc-options:
+  #     - -O2
   #   dependencies:
   #     - hadventofcode
   #     - containers
@@ -108,13 +110,24 @@ executables:
   #   dependencies:
   #     - hadventofcode
   #     - array
+  #
+  # day18:
+  #   main: Day18.hs
+  #   source-dirs: sols/day18
+  #   dependencies:
+  #     - hadventofcode
+  #     - parsec
 
-  day18:
-    main: Day18.hs
-    source-dirs: sols/day18
+  day19:
+    main: Day19.hs
+    source-dirs: sols/day19
+    ghc-options:
+      - -O2
     dependencies:
       - hadventofcode
-      - parsec
+      - array
+      - split
+      - MissingH
 
 # tests:
 #   hadventofcode-test:

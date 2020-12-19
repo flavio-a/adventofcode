@@ -1,7 +1,6 @@
 import ReadFile
 import Data.Maybe
 import qualified Data.IntMap.Strict as Map
--- import Debug.Trace
 
 type Store = Map.IntMap Int
 nextVal :: Store -> Int -> Int -> Int
