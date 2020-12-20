@@ -117,17 +117,26 @@ executables:
   #   dependencies:
   #     - hadventofcode
   #     - parsec
+  #
+  # day19:
+  #   main: Day19.hs
+  #   source-dirs: sols/day19
+  #   ghc-options:
+  #     - -O2
+  #   dependencies:
+  #     - hadventofcode
+  #     - array
+  #     - split
+  #     - MissingH
 
-  day19:
-    main: Day19.hs
-    source-dirs: sols/day19
-    ghc-options:
-      - -O2
+  day20:
+    main: Day20.hs
+    source-dirs: sols/day20
     dependencies:
       - hadventofcode
       - array
-      - split
-      - MissingH
+      - containers
+      - extra
 
 # tests:
 #   hadventofcode-test:
