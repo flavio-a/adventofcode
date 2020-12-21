@@ -128,14 +128,21 @@ executables:
   #     - array
   #     - split
   #     - MissingH
+  #
+  # day20:
+  #   main: Day20.hs
+  #   source-dirs: sols/day20
+  #   dependencies:
+  #     - hadventofcode
+  #     - array
+  #     - containers
+  #     - extra
 
-  day20:
-    main: Day20.hs
-    source-dirs: sols/day20
+  day21:
+    main: Day21.hs
+    source-dirs: sols/day21
     dependencies:
       - hadventofcode
-      - array
-      - containers
       - extra
 
 # tests:
