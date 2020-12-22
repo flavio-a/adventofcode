@@ -137,13 +137,21 @@ executables:
   #     - array
   #     - containers
   #     - extra
+  #
+  # day21:
+  #   main: Day21.hs
+  #   source-dirs: sols/day21
+  #   dependencies:
+  #     - hadventofcode
+  #     - extra
 
-  day21:
-    main: Day21.hs
-    source-dirs: sols/day21
+  day22:
+    main: Day22.hs
+    source-dirs: sols/day22
+    ghc-options:
+      - -O2
     dependencies:
       - hadventofcode
-      - extra
 
 # tests:
 #   hadventofcode-test:
