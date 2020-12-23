@@ -144,14 +144,21 @@ executables:
   #   dependencies:
   #     - hadventofcode
   #     - extra
+  #
+  # day22:
+  #   main: Day22.hs
+  #   source-dirs: sols/day22
+  #   ghc-options:
+  #     - -O2
+  #   dependencies:
+  #     - hadventofcode
 
-  day22:
-    main: Day22.hs
-    source-dirs: sols/day22
-    ghc-options:
-      - -O2
+  day23:
+    main: Day23.hs
+    source-dirs: sols/day23
     dependencies:
       - hadventofcode
+      - split
 
 # tests:
 #   hadventofcode-test:
