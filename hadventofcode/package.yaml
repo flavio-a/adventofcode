@@ -152,13 +152,19 @@ executables:
   #     - -O2
   #   dependencies:
   #     - hadventofcode
+  #
+  # day23:
+  #   main: Day23.hs
+  #   source-dirs: sols/day23
+  #   dependencies:
+  #     - hadventofcode
+  #     - split
 
-  day23:
-    main: Day23.hs
-    source-dirs: sols/day23
+  day24:
+    main: Day24.hs
+    source-dirs: sols/day24
     dependencies:
       - hadventofcode
-      - split
 
 # tests:
 #   hadventofcode-test:
