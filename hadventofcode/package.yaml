@@ -21,158 +21,147 @@ library:
     - mtl
 
 executables:
-  # day6:
-  #   main: Day6.hs
-  #   source-dirs: sols/day6
-  #   dependencies:
-  #     - hadventofcode
-  #     - sort
-  #
-  # day7:
-  #   main: Day7.hs
-  #   source-dirs: sols/day7
-  #   dependencies:
-  #     - hadventofcode
-  #     - split
-  #
-  # day8:
-  #   main: Day8.hs
-  #   source-dirs: sols/day8
-  #   dependencies:
-  #     - hadventofcode
-  #     - extra
-  #
-  # day9:
-  #   main: Day9.hs
-  #   source-dirs: sols/day9
-  #   dependencies:
-  #     - hadventofcode
-  #
-  # day10:
-  #   main: Day10.hs
-  #   source-dirs: sols/day10
-  #   dependencies:
-  #     - hadventofcode
-  #     - sort
-  #
-  # day11:
-  #   main: Day11.hs
-  #   source-dirs: sols/day11
-  #   dependencies:
-  #     - hadventofcode
-  #     - array
-  #     - split
-  #
-  # day12:
-  #   main: Day12.hs
-  #   source-dirs: sols/day12
-  #   dependencies:
-  #     - hadventofcode
-  #     - array
-  #     - extra
-  #
-  # day13:
-  #   main: Day13.hs
-  #   source-dirs: sols/day13
-  #   dependencies:
-  #     - hadventofcode
-  #     - split
-  #     - extra
-  #
-  # day14:
-  #   main: Day14.hs
-  #   source-dirs: sols/day14
-  #   dependencies:
-  #     - hadventofcode
-  #     - split
-  #     - containers
-  #
-  # day15:
-  #   main: Day15.hs
-  #   source-dirs: sols/day15
-  #   ghc-options:
-  #     - -O2
-  #   dependencies:
-  #     - hadventofcode
-  #     - containers
-  #
-  # day16:
-  #   main: Day16.hs
-  #   source-dirs: sols/day16
-  #   dependencies:
-  #     - hadventofcode
-  #     - sort
-  #     - extra
-  #
-  # day17:
-  #   main: Day17.hs
-  #   source-dirs: sols/day17
-  #   dependencies:
-  #     - hadventofcode
-  #     - array
-  #
-  # day18:
-  #   main: Day18.hs
-  #   source-dirs: sols/day18
-  #   dependencies:
-  #     - hadventofcode
-  #     - parsec
-  #
-  # day19:
-  #   main: Day19.hs
-  #   source-dirs: sols/day19
-  #   ghc-options:
-  #     - -O2
-  #   dependencies:
-  #     - hadventofcode
-  #     - array
-  #     - split
-  #     - MissingH
-  #
-  # day20:
-  #   main: Day20.hs
-  #   source-dirs: sols/day20
-  #   dependencies:
-  #     - hadventofcode
-  #     - array
-  #     - containers
-  #     - extra
-  #
-  # day21:
-  #   main: Day21.hs
-  #   source-dirs: sols/day21
-  #   dependencies:
-  #     - hadventofcode
-  #     - extra
-  #
-  # day22:
-  #   main: Day22.hs
-  #   source-dirs: sols/day22
-  #   ghc-options:
-  #     - -O2
-  #   dependencies:
-  #     - hadventofcode
-  #
-  # day23:
-  #   main: Day23.hs
-  #   source-dirs: sols/day23
-  #   dependencies:
-  #     - hadventofcode
-  #     - split
+  day6:
+    main: Day6.hs
+    source-dirs: sols/day6
+    dependencies:
+      - hadventofcode
+      - sort
+
+  day7:
+    main: Day7.hs
+    source-dirs: sols/day7
+    dependencies:
+      - hadventofcode
+      - split
+
+  day8:
+    main: Day8.hs
+    source-dirs: sols/day8
+    dependencies:
+      - hadventofcode
+      - extra
+
+  day9:
+    main: Day9.hs
+    source-dirs: sols/day9
+    dependencies:
+      - hadventofcode
+
+  day10:
+    main: Day10.hs
+    source-dirs: sols/day10
+    dependencies:
+      - hadventofcode
+      - sort
+
+  day11:
+    main: Day11.hs
+    source-dirs: sols/day11
+    dependencies:
+      - hadventofcode
+      - array
+      - split
+
+  day12:
+    main: Day12.hs
+    source-dirs: sols/day12
+    dependencies:
+      - hadventofcode
+      - array
+      - extra
+
+  day13:
+    main: Day13.hs
+    source-dirs: sols/day13
+    dependencies:
+      - hadventofcode
+      - split
+      - extra
+
+  day14:
+    main: Day14.hs
+    source-dirs: sols/day14
+    dependencies:
+      - hadventofcode
+      - split
+      - containers
+
+  day15:
+    main: Day15.hs
+    source-dirs: sols/day15
+    ghc-options:
+      - -O2
+    dependencies:
+      - hadventofcode
+      - containers
+
+  day16:
+    main: Day16.hs
+    source-dirs: sols/day16
+    dependencies:
+      - hadventofcode
+      - sort
+      - extra
+
+  day17:
+    main: Day17.hs
+    source-dirs: sols/day17
+    dependencies:
+      - hadventofcode
+      - array
+
+  day18:
+    main: Day18.hs
+    source-dirs: sols/day18
+    dependencies:
+      - hadventofcode
+      - parsec
+
+  day19:
+    main: Day19.hs
+    source-dirs: sols/day19
+    ghc-options:
+      - -O2
+    dependencies:
+      - hadventofcode
+      - array
+      - split
+      - MissingH
+
+  day20:
+    main: Day20.hs
+    source-dirs: sols/day20
+    dependencies:
+      - hadventofcode
+      - array
+      - containers
+      - extra
+
+  day21:
+    main: Day21.hs
+    source-dirs: sols/day21
+    dependencies:
+      - hadventofcode
+      - extra
+
+  day22:
+    main: Day22.hs
+    source-dirs: sols/day22
+    ghc-options:
+      - -O2
+    dependencies:
+      - hadventofcode
+
+  day23:
+    main: Day23.hs
+    source-dirs: sols/day23
+    dependencies:
+      - hadventofcode
+      - split
 
   day24:
     main: Day24.hs
     source-dirs: sols/day24
     dependencies:
       - hadventofcode
-
-# tests:
-#   hadventofcode-test:
-#     main:                Spec.hs
-#     source-dirs:         test
-#     ghc-options:
-#     - -threaded
-#     - -rtsopts
-#     - -with-rtsopts=-N
-#     dependencies:
-#     - hadventofcode
