@@ -3,3 +3,6 @@ inputs/
 
 # C++ output
 *.out
+
+# Cargo generated files
+2021/adventofcrustacean/target/
