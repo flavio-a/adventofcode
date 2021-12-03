@@ -34,10 +34,5 @@ pub fn str2int(s: &str) -> i64 {
 /// assert_eq!(nums, [1, 2, 42]);
 /// ```
 pub fn lines_to_ints(content: String) -> Vec<i64> {
-    content.trim().split("\n").map(str2int).collect()
-}
-
-/// Split a String in single lines.
-pub fn lines(content: String) -> Vec<String> {
-    content.trim().split("\n").map(|s| (*s).to_string()).collect()
+    content.lines().map(str2int).collect()
 }
