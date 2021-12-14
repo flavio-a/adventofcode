@@ -6,7 +6,7 @@ local t = {}
 
 -- Stateless iterator on non-integer keys
 local nextNonInt = function(tab, key)
-    local nextKey, nextValue = key
+    local nextKey, nextValue = key, nil
     repeat
         nextKey, nextValue = next(tab, nextKey)
     until type(nextKey) ~= 'number' or math.floor(nextKey) ~= nextKey
@@ -31,13 +31,13 @@ local minor = function(a, b)
 end
 
 
---[[
+-- --[[
 
-Since lua5.2 unpack has been moved to table.unpack, this allows migration with
-older versions on PCW.
+-- Since lua5.2 unpack has been moved to table.unpack, this allows migration with
+-- older versions on PCW.
 
---]]
-table.unpack = table.unpack or unpack
+-- --]]
+-- table.unpack = table.unpack or unpack
 
 --[[
 

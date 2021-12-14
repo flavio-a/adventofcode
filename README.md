@@ -12,6 +12,14 @@ this without going back to Haskell and/or C++, because Rust is really heavy
 until you get used to it (eg. I spent 13 minutes to memoize a function, and I
 even did it "wrong" using an `unsafe`).
 
+Ok, I got it. When you have to manipulate strings more than "split on chars and
+parse to integers" don't use Rust. Just, don't. Substrings and concatenation
+are much harder than you would expect, and once you have to use string to index
+an hashtable, that's it. Borrowing wasn't made for strings. Or maybe (probably)
+it's just me that don't understand it, but alas.
+
+So Lua ftw.
+
 ## 20something
 I'd like to learn Rust, so I thought to use an old AoC for this purpose. It may
 remain a dream for long, but who knows what boredom can do.
