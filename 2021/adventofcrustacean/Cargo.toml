@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 itertools = "^0.10.0"
 pathfinding = "0.1"
+either = "1"

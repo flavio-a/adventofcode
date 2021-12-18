@@ -6,6 +6,7 @@ version = 3
 name = "adventofcrustacean"
 version = "0.1.0"
 dependencies = [
+ "either",
  "itertools 0.10.1",
  "pathfinding",
 ]
