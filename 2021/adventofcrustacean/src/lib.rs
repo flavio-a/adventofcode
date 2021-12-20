@@ -66,3 +66,20 @@ pub fn visualize(points: Vec<(i64, i64)>) {
         }
     }
 }
+
+/// Visualize a grid of bools
+pub fn visualize_grid(points: &Vec<Vec<bool>>) {
+    for line in points.iter() {
+        for &dot in line.iter() {
+            if dot {
+                // print!("█");
+                print!("#");
+            }
+            else {
+                // print!(" ");
+                print!(".");
+            }
+        }
+        println!("");
+    }
+}
