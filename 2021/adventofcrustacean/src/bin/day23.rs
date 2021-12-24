@@ -78,17 +78,17 @@ fn move_amph(hall: &Hall, rows: &Vec<Row>, start: Pos, end: Pos) -> Option<Energ
     return Some(steps * energy_factor);
 }
 
-fn print_conf(hall: &Hall, rows: &Vec<Row>) {
-    println!("#############");
-    print!("#");
-    for c in hall.iter() { print!("{}", c); }
-    println!("#");
-    for row in rows.iter() {
-        print!("  #");
-        for c in row.iter() { print!("{}#", c); }
-        println!("");
-    }
-}
+// fn print_conf(hall: &Hall, rows: &Vec<Row>) {
+//     println!("#############");
+//     print!("#");
+//     for c in hall.iter() { print!("{}", c); }
+//     println!("#");
+//     for row in rows.iter() {
+//         print!("  #");
+//         for c in row.iter() { print!("{}#", c); }
+//         println!("");
+//     }
+// }
 
 fn col_amph(col: Coord) -> char {
     match col {
@@ -194,42 +194,6 @@ fn empty_col(hall: Hall, rows: Vec<Row>, col: Coord) -> Vec<(Hall, Vec<Row>, Ene
         }
     }
     return res;
-}
-
-// Move a cell to target
-fn move_to_target(mut hall: Hall, mut rows: Vec<Row>, pos: Pos) -> Vec<(Hall, Vec<Row>, Energy)> {
-    let amph: char = get_cell(&hall, &rows, pos);
-    let target = can_move_to_target(&hall, &rows, amph);
-    if target.is_none() {
-        return vec![];
-    }
-    let target = target.unwrap();
-    // It can move to target
-    // First should open up the space above pos
-    for i in ((pos.0 + 1)..=1).rev() {
-        if get_cell(&hall, &rows, (i, pos.1)) != ' ' {
-            let mut res = vec![];
-            for (h, rs, en) in move_out(hall, rows, (i, pos.1)).into_iter() {
-                res.extend(move_to_target(h, rs, pos).into_iter().map(|(h, rs, en1)| (h, rs, en1 + en)));
-            }
-            return res;
-        }
-    }
-    // If it gets here, all cells above are ' '
-    let energy_spent = move_amph(&hall, &rows, pos, target);
-    if energy_spent.is_some() {
-        if pos.0 == 0 {
-            hall[pos.1] = ' ';
-        }
-        else {
-            rows[pos.0 - 1][pos.1] = ' ';
-        }
-        rows[target.0 - 1][target.1] = amph;
-        return vec![(hall, rows, energy_spent.unwrap())];
-    }
-    else {
-        return vec![];
-    }
 }
 
 fn move_hallway_to_target(mut hall: Hall, mut rows: Vec<Row>) -> (Hall, Vec<Row>, Energy) {
