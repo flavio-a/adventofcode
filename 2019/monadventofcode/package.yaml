@@ -25,11 +25,17 @@ library:
     - array
     - mtl
     - extra
+    - monad-loops
 
 executables:
   day2:
     main:                Day2.hs
-    source-dirs:         src/days
+    source-dirs:         src/day2
+    dependencies:
+    - monadventofcode
+  day5:
+    main:                Day5.hs
+    source-dirs:         src/day5
     dependencies:
     - monadventofcode
 
