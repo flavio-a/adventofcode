@@ -1,6 +1,10 @@
 # Advent of Code
 My solutions to [Advent of Code](adventofcode.com). Each subdir is for one year.
 
+## 2019
+Even days make you build an [Intcode](https://adventofcode.com/2019/day/2)
+interpreter. I think this could be an interesting exercise to do in Haskell.
+
 ## 2020
 My first partecipation. Half Haskell, half C++ solutions. Some solutions have
 problems, but they all got me a (two) star(s) in the end. And
