@@ -29,12 +29,12 @@ library:
 
 executables:
   day2:
-    main:                Day2.hs
+    main:                Main.hs
     source-dirs:         src/day2
     dependencies:
     - monadventofcode
   day5:
-    main:                Day5.hs
+    main:                Main.hs
     source-dirs:         src/day5
     dependencies:
     - monadventofcode
