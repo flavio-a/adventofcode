@@ -26,6 +26,7 @@ library:
     - mtl
     - extra
     - monad-loops
+    - containers
 
 executables:
   day2:
@@ -43,14 +44,15 @@ executables:
     source-dirs:         src/day7
     dependencies:
     - monadventofcode
+  day9:
+    main:                Main.hs
+    source-dirs:         src/day9
+    dependencies:
+    - monadventofcode
 
-# tests:
-#   monadventofcode-test:
-#     main:                Spec.hs
-#     source-dirs:         test
-#     ghc-options:
-#     - -threaded
-#     - -rtsopts
-#     - -with-rtsopts=-N
-#     dependencies:
-#     - monadventofcode
+tests:
+  monadventofcode-test:
+    main:                Spec.hs
+    source-dirs:         test
+    dependencies:
+    - monadventofcode

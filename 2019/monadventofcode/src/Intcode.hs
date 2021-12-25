@@ -13,11 +13,11 @@ where
 import Data.List (intercalate, unfoldr)
 import Data.List.Split (splitOn, splitOneOf)
 import Data.Array.Unboxed
-import Data.Tuple.Extra (fst3, snd3, thd3)
-import Data.Maybe (catMaybes)
+import Data.Maybe (catMaybes, fromMaybe)
 import Data.Char (isSpace)
+import Data.IntMap.Strict (IntMap)
+import qualified Data.IntMap.Strict as IntMap
 import Control.Monad.State.Lazy
--- import Control.Monad.Extra
 import Control.Monad.Loops (untilM')
 
 type OPCode = Int
@@ -40,29 +40,60 @@ showICProg :: ICProg -> String
 showICProg = intercalate "," . fmap show . elems
 
 -- I would like a monad in which execute instructions
--- The monad is State, where my state is a tuple (IP, memory, inputstream)
-type ICState = (IP, ICProg, InputStream)
+-- The monad is State, where my state is a struct
+data ICState = ICState { ip :: IP
+                       , prog :: ICProg
+                       , extramem :: IntMap OPCode
+                       , istream :: InputStream
+                       , rbase :: Addr
+                       } deriving Show
+-- Base ICState
+baseICState :: ICState
+baseICState = ICState { ip = 0, extramem = IntMap.empty, rbase = 0 }
 
 getIP :: State ICState IP
-getIP = get >>= (return . fst3)
+getIP = get >>= (return . ip)
 
 setIP :: IP -> State ICState ()
-setIP newip = modify (\(_, mem, istream) -> (newip, mem, istream))
+setIP newip = modify (\state -> state { ip = newip })
 
 incrIP :: Int -> State ICState ()
-incrIP d = modify (\(oldip, mem, istream) -> (oldip + d, mem, istream))
-
-getMem :: Addr -> State ICState OPCode
-getMem addr = get >>= (return . (! addr) . snd3)
-
-setMem :: Addr -> OPCode -> State ICState ()
-setMem addr newop = modify (\(ip, oldmem, istream) -> (ip, oldmem // [(addr, newop)], istream))
+incrIP d = modify (\state -> state { ip = ip state + d })
 
 getInput :: State ICState Input
 getInput = do
-    (ip, mem, istream) <- get
-    put (ip, mem, tail istream)
-    return $ head istream
+    state <- get
+    put $ state { istream = tail $ istream state }
+    return $ head $ istream state
+
+getRbase :: State ICState Addr
+getRbase = get >>= (return . rbase)
+
+incrRbase :: Addr -> State ICState ()
+incrRbase d = modify (\state -> state { rbase = rbase state + d })
+
+-- Working with memory: should decide whether to use the program array or the
+-- hashmap
+isInArray :: Addr -> ICProg -> Bool
+isInArray addr prog = inRange (bounds prog) addr
+
+getMem :: Addr -> State ICState OPCode
+getMem addr = do
+    state <- get
+    if inRange (bounds $ prog state) addr then
+        return (prog state ! addr)
+    else
+        return (fromMaybe 0 $ IntMap.lookup addr $ extramem state)
+
+setMem :: Addr -> OPCode -> State ICState ()
+-- setMem addr newop = modify (\state -> state { prog = (prog state) // [(addr, newop)] })
+setMem addr newop = modify updateMem
+    where
+        updateMem :: ICState -> ICState
+        updateMem state = if inRange (bounds $ prog state) addr then
+                              state { prog = (prog state) // [(addr, newop)] }
+                          else
+                              state { extramem = IntMap.insert addr newop (extramem state) }
 
 -- Get the current instruction
 getCurrInstr :: State ICState OPCode
@@ -82,25 +113,39 @@ getOpcode fullcode = (opcode, modes)
         opcode = fullcode `mod` 100
         modes = unfoldr (\seed -> Just (seed `mod` 10, seed `div` 10)) (fullcode `div` 100)
 
+-- Given an index and the mode, return the address of a parameter
+getAddress :: Int -> Mode -> State ICState Addr
+getAddress idx mode =
+    case mode of
+        -- Position
+        0 -> getCurrOffset idx
+        -- Relative
+        2 -> do
+            rbase <- getRbase
+            delta <- getCurrOffset idx
+            return $ rbase + delta
+        -- Unexpected
+        1 -> do
+            state <- get
+            error $ "Asked address for parameter mode 1 (immediate)\n" ++ show state
+        _ -> do
+            state <- get
+            error $ "Unexpected parameter mode for address: " ++ show mode ++ "\n" ++ show state
+
 -- Given an index and the mode, return the value of a parameter
 getParameter :: Int -> Mode -> State ICState OPCode
 getParameter idx mode =
     case mode of
         -- Position
-        0 -> do
-            addr <- getCurrOffset idx
-            val <- getMem addr
-            -- val <- (getMem <=< (getCurrOffset idx))
-            return val
+        0 -> getAddress idx 0 >>= getMem
         -- Immediate
-        -- I know this is just (getCurrOffset idx), but I think this is clearer
-        1 -> do
-            val <- getCurrOffset idx
-            return val
+        1 -> getCurrOffset idx
+        -- Relative
+        2 -> getAddress idx 2 >>= getMem
         -- Unexpected
         _ -> do
             state <- get
-            error $ "Unexpected parameter mode: " ++ (show mode) ++ "\n" ++ (show state)
+            error $ "Unexpected parameter mode for value: " ++ (show mode) ++ "\n" ++ (show state)
 
 -- Performs one execution step. Return a pair where the first value is False if
 -- execution ended and the second one is the (possible) output
@@ -113,26 +158,26 @@ step = do
         99 -> return Nothing
         -- ADD
         1 -> do
-            let (md1:md2:0:_) = modes
+            let (md1:md2:md3:_) = modes
             val1 <- getParameter 1 md1
             val2 <- getParameter 2 md2
-            addrres <- getCurrOffset 3
+            addrres <- getAddress 3 md3
             setMem addrres (val1 + val2)
             incrIP 4
             return Nothing
         -- MUL
         2 -> do
-            let (md1:md2:0:_) = modes
+            let (md1:md2:md3:_) = modes
             val1 <- getParameter 1 md1
             val2 <- getParameter 2 md2
-            addrres <- getCurrOffset 3
+            addrres <- getAddress 3 md3
             setMem addrres (val1 * val2)
             incrIP 4
             return Nothing
         -- INPUT
         3 -> do
-            let (0:_) = modes
-            addr <- getCurrOffset 1
+            let (md:_) = modes
+            addr <- getAddress 1 md
             getInput >>= setMem addr
             incrIP 2
             return Nothing
@@ -158,21 +203,27 @@ step = do
             return Nothing
         -- LESS-THAN
         7 -> do
-            let (md1:md2:0:_) = modes
+            let (md1:md2:md3:_) = modes
             par1 <- getParameter 1 md1
             par2 <- getParameter 2 md2
-            addr <- getCurrOffset 3
+            addr <- getAddress 3 md3
             setMem addr $ if par1 < par2 then 1 else 0
             incrIP 4
             return Nothing
         -- EQUAL
         8 -> do
-            let (md1:md2:0:_) = modes
+            let (md1:md2:md3:_) = modes
             par1 <- getParameter 1 md1
             par2 <- getParameter 2 md2
-            addr <- getCurrOffset 3
+            addr <- getAddress 3 md3
             setMem addr $ if par1 == par2 then 1 else 0
             incrIP 4
+            return Nothing
+        -- CHANGE-RBASE
+        9 -> do
+            let (md1:_) = modes
+            incrRbase =<< getParameter 1 md1
+            incrIP 2
             return Nothing
         -- Unexpected
         _ -> do
@@ -191,12 +242,12 @@ halt = do
 
 -- Exec operations: collect output stream
 execICfull :: ICProg -> InputStream -> (ICProg, OutputStream)
-execICfull prog istream = (icprog, catMaybes ostream)
+execICfull myprog istream = (prog finstate, catMaybes ostream)
     where
-        initstate = (0, prog, istream)
-        (ostream, (_, icprog, _)) = runState (step `untilM'` halt) initstate
+        initstate = baseICState { prog = myprog, istream = istream }
+        (ostream, finstate) = runState (step `untilM'` halt) initstate
 
-execIC :: ICProg -> InputStream -> OutputStream
 -- Can't use the implementation `execIC = snd . execICfull` because runState
 -- isn't lazy enough to support connection of input and output streams
-execIC prog istream = catMaybes $ evalState (step `untilM'` halt) $ (0, prog, istream)
+execIC :: ICProg -> InputStream -> OutputStream
+execIC prog istream = catMaybes $ evalState (step `untilM'` halt) $ baseICState { prog = prog, istream = istream }
