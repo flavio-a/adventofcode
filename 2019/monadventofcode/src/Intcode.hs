@@ -1,10 +1,12 @@
 module Intcode (
+    ICProg,
+    ICState,
     parse,
     showICProg,
     execIC,
     execICfull,
     (//),
-    (!)
+    (!),
     )
 where
 
@@ -13,6 +15,7 @@ import Data.List.Split (splitOn, splitOneOf)
 import Data.Array.Unboxed
 import Data.Tuple.Extra (fst3, snd3, thd3)
 import Data.Maybe (catMaybes)
+import Data.Char (isSpace)
 import Control.Monad.State.Lazy
 -- import Control.Monad.Extra
 import Control.Monad.Loops (untilM')
@@ -21,16 +24,17 @@ type OPCode = Int
 type IP = Int
 type Addr = Int
 type ICProg = UArray Addr OPCode
+type Mode = Int
+
 type Input = Int
 type InputStream = [Input]
 type Output = Int
 type OutputStream = [Output]
-type Mode = Int
 
 parse :: String -> ICProg
 parse str = listArray (0, length list - 1) list
     where
-        list = map read $ splitOn "," str
+        list = map read $ splitOn "," $ filter (not . isSpace) str
 
 showICProg :: ICProg -> String
 showICProg = intercalate "," . fmap show . elems
@@ -68,7 +72,7 @@ getCurrInstr = getIP >>= getMem
 getCurrOffset :: Int -> State ICState OPCode
 getCurrOffset d = getIP >>= (getMem . (+ d))
 
--- Now for the interpreter
+------------------------------- Interpreter -----------------------------------
 
 -- Get opcode an parameter modes from a value. The head of the list is the mode
 -- of the first argument, and so on
@@ -179,7 +183,8 @@ step = do
 halt :: State ICState Bool
 halt = do
     currInstr <- getCurrInstr
-    case currInstr `mod` 100 of
+    let (opcode, _) = getOpcode currInstr
+    case opcode of
         -- HALT
         99 -> return True
         _ -> return False
@@ -192,4 +197,6 @@ execICfull prog istream = (icprog, catMaybes ostream)
         (ostream, (_, icprog, _)) = runState (step `untilM'` halt) initstate
 
 execIC :: ICProg -> InputStream -> OutputStream
-execIC prog istream = snd $ execICfull prog istream
+-- Can't use the implementation `execIC = snd . execICfull` because runState
+-- isn't lazy enough to support connection of input and output streams
+execIC prog istream = catMaybes $ evalState (step `untilM'` halt) $ (0, prog, istream)
