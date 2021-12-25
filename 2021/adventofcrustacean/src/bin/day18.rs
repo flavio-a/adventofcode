@@ -120,19 +120,20 @@ fn magnitude(pair: Tree) -> u32 {
     return 3 * magnitude(sp1) + 2 * magnitude(sp2);
 }
 
-// fn print_pair(pair: Tree) {
-//     if pair.cont.is_left() {
-//         print!("{}", pair.cont.unwrap_left());
-//     }
-//     else {
-//         let (sp1, sp2) = *(pair.cont.unwrap_right());
-//         print!("[");
-//         print_pair(sp1);
-//         print!(",");
-//         print_pair(sp2);
-//         print!("]");
-//     }
-// }
+#[allow(dead_code)]
+fn print_pair(pair: Tree) {
+    if pair.cont.is_left() {
+        print!("{}", pair.cont.unwrap_left());
+    }
+    else {
+        let (sp1, sp2) = *(pair.cont.unwrap_right());
+        print!("[");
+        print_pair(sp1);
+        print!(",");
+        print_pair(sp2);
+        print!("]");
+    }
+}
 
 fn main() {
     let content = adventofcrustacean::read_input();

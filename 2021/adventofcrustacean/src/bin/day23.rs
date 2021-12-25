@@ -78,17 +78,18 @@ fn move_amph(hall: &Hall, rows: &Vec<Row>, start: Pos, end: Pos) -> Option<Energ
     return Some(steps * energy_factor);
 }
 
-// fn print_conf(hall: &Hall, rows: &Vec<Row>) {
-//     println!("#############");
-//     print!("#");
-//     for c in hall.iter() { print!("{}", c); }
-//     println!("#");
-//     for row in rows.iter() {
-//         print!("  #");
-//         for c in row.iter() { print!("{}#", c); }
-//         println!("");
-//     }
-// }
+#[allow(dead_code)]
+fn print_conf(hall: &Hall, rows: &Vec<Row>) {
+    println!("#############");
+    print!("#");
+    for c in hall.iter() { print!("{}", c); }
+    println!("#");
+    for row in rows.iter() {
+        print!("  #");
+        for c in row.iter() { print!("{}#", c); }
+        println!("");
+    }
+}
 
 fn col_amph(col: Coord) -> char {
     match col {

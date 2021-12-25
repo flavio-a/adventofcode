@@ -42,14 +42,15 @@ fn step(board: Board) -> (Board, u32) {
     return (new_board, flashes);
 }
 
-// fn print_board(b: &Board) {
-//     for r in b.iter() {
-//         for &v in r.iter() {
-//             print!("{}", v);
-//         }
-//         println!("");
-//     }
-// }
+#[allow(dead_code)]
+fn print_board(b: &Board) {
+    for r in b.iter() {
+        for &v in r.iter() {
+            print!("{}", v);
+        }
+        println!("");
+    }
+}
 
 fn all_together(b: &Board) -> bool {
     b.iter().all(|r| r.iter().all(|&v| v == 0))
