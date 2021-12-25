@@ -5,7 +5,7 @@ import Intcode (execICfull, parse, (//), (!))
 execICfirst prog = (! 0) $ fst $ execICfull prog [0..]
 
 main = do
-    content <- ReadFile.readFileArg
+    content <- ReadFile.readFileArgDefault "inputs/day2"
     let a = Intcode.parse content
     -- Part 1
     putStrLn $ show $ execICfirst (a // [(1, 12), (2, 2)])

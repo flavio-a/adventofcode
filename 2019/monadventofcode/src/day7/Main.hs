@@ -15,7 +15,7 @@ output prog phaseSeq = last $ last outputs
             )
 
 main = do
-    content <- ReadFile.readFileArg
+    content <- ReadFile.readFileArgDefault "inputs/day7"
     let prog = Intcode.parse content
     -- Part 1
     putStrLn $ show $ maximum $ map (runPhaseSeq prog) $ permutations [0..4]
