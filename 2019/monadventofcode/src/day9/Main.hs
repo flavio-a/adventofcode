@@ -1,6 +1,5 @@
 import ReadFile
 import Intcode (execIC, parse)
-import Data.List (foldl', permutations)
 
 main = do
     content <- ReadFile.readFileArgDefault "inputs/day9"

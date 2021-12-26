@@ -27,6 +27,7 @@ library:
     - extra
     - monad-loops
     - containers
+    - unordered-containers
 
 executables:
   day2:
@@ -49,6 +50,12 @@ executables:
     source-dirs:         src/day9
     dependencies:
     - monadventofcode
+  day11:
+    main:                Main.hs
+    source-dirs:         src/day11
+    dependencies:
+    - monadventofcode
+    - unordered-containers
 
 tests:
   monadventofcode-test:
