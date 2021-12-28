@@ -1,12 +1,16 @@
 module Intcode (
     ICProg,
     ICState,
+    InputStream,
+    OutputStream,
     parse,
     showICProg,
-    execIC,
-    execICfull,
     (//),
     (!),
+    execIC,
+    execICfull,
+    initICvm,
+    execICinput,
     )
 where
 
@@ -240,14 +244,38 @@ halt = do
         99 -> return True
         _ -> return False
 
+-- Initialize an Intcode VM
+initICvm :: ICProg -> InputStream -> ICState
+initICvm prog istream = baseICState { prog = prog, istream = istream }
+
 -- Exec operations: collect output stream
 execICfull :: ICProg -> InputStream -> (ICProg, OutputStream)
 execICfull myprog istream = (prog finstate, catMaybes ostream)
     where
-        initstate = baseICState { prog = myprog, istream = istream }
-        (ostream, finstate) = runState (step `untilM'` halt) initstate
+        (ostream, finstate) = runState (step `untilM'` halt) $ initICvm myprog istream
 
 -- Can't use the implementation `execIC = snd . execICfull` because runState
 -- isn't lazy enough to support connection of input and output streams
 execIC :: ICProg -> InputStream -> OutputStream
-execIC prog istream = catMaybes $ evalState (step `untilM'` halt) $ baseICState { prog = prog, istream = istream }
+execIC prog istream = catMaybes $ evalState (step `untilM'` halt) $ initICvm prog istream
+
+---------------------------- Interactive input --------------------------------
+
+-- Mainly used for day 13, where the input comes from IO monad and so can't be
+-- lazy
+
+-- Runs an IC vm, blocking when it needs an input but the input stream is empty
+execICinput :: ICState -> InputStream -> (OutputStream, ICState)
+execICinput initstate newistream = (catMaybes ostream, finstate)
+    where
+        initstate' = initstate { istream = newistream }
+        (ostream, finstate) = runState (step `untilM'` wait) initstate'
+
+        wait :: State ICState Bool
+        wait = do
+            currInstr <- getCurrInstr
+            let (opcode, _) = getOpcode currInstr
+            case opcode of
+                99 -> return True
+                3  -> get >>= (return . null . istream)
+                _  -> return False
