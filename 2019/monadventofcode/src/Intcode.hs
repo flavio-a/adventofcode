@@ -56,7 +56,7 @@ baseICState :: ICState
 baseICState = ICState { ip = 0, extramem = IntMap.empty, rbase = 0 }
 
 getIP :: State ICState IP
-getIP = get >>= (return . ip)
+getIP = gets ip
 
 setIP :: IP -> State ICState ()
 setIP newip = modify (\state -> state { ip = newip })
@@ -71,7 +71,7 @@ getInput = do
     return $ head $ istream state
 
 getRbase :: State ICState Addr
-getRbase = get >>= (return . rbase)
+getRbase = gets rbase
 
 incrRbase :: Addr -> State ICState ()
 incrRbase d = modify (\state -> state { rbase = rbase state + d })
@@ -182,7 +182,7 @@ step = do
         3 -> do
             let (md:_) = modes
             addr <- getAddress 1 md
-            getInput >>= setMem addr
+            setMem addr =<< getInput
             incrIP 2
             return Nothing
         -- OUTPUT
@@ -277,5 +277,5 @@ execICinput initstate newistream = (catMaybes ostream, finstate)
             let (opcode, _) = getOpcode currInstr
             case opcode of
                 99 -> return True
-                3  -> get >>= (return . null . istream)
+                3  -> gets (null . istream)
                 _  -> return False
