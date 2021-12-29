@@ -70,6 +70,12 @@ executables:
     - monadventofcode
     - containers
     - mtl
+  day17:
+    main:                Main.hs
+    source-dirs:         src/day17
+    dependencies:
+    - monadventofcode
+    - array
 
 
 tests:

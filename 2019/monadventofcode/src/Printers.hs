@@ -1,5 +1,6 @@
 module Printers (
     printGrid,
+    printList,
 ) where
 
 import Data.Foldable (for_)
@@ -10,6 +11,9 @@ import Data.Maybe (fromMaybe)
 
 type Coord = (Int, Int)
 type Grid = HashMap Coord Char
+
+printList :: [(Coord, Char)] -> IO ()
+printList = printGrid . HashMap.fromList
 
 printGrid :: Grid -> IO ()
 printGrid grid = do
