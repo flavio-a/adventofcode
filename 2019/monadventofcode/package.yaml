@@ -63,6 +63,13 @@ executables:
     - monadventofcode
     - unordered-containers
     - monad-loops
+  day15:
+    main:                Main.hs
+    source-dirs:         src/day15
+    dependencies:
+    - monadventofcode
+    - containers
+    - mtl
 
 
 tests:
