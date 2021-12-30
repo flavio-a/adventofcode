@@ -262,9 +262,6 @@ execIC prog istream = catMaybes $ evalState (step `untilM'` halt) $ initICvm pro
 
 ---------------------------- Interactive input --------------------------------
 
--- Mainly used for day 13, where the input comes from IO monad and so can't be
--- lazy
-
 -- Runs an IC vm, blocking when it needs an input but the input stream is empty
 execICinput :: ICState -> InputStream -> (OutputStream, ICState)
 execICinput initstate newistream = (catMaybes ostream, finstate)

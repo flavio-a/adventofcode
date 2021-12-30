@@ -94,6 +94,12 @@ executables:
     - mtl
     - array
     - monad-loops
+  day25:
+    main:                Main.hs
+    source-dirs:         src/day25
+    dependencies:
+    - monadventofcode
+    - monad-loops
 
 tests:
   monadventofcode-test:
