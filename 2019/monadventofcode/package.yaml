@@ -86,6 +86,14 @@ executables:
     source-dirs:         src/day21
     dependencies:
     - monadventofcode
+  day23:
+    main:                Main.hs
+    source-dirs:         src/day23
+    dependencies:
+    - monadventofcode
+    - mtl
+    - array
+    - monad-loops
 
 tests:
   monadventofcode-test:

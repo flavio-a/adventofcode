@@ -1,6 +1,7 @@
 module Intcode (
     ICProg,
     ICState,
+    Input,
     InputStream,
     OutputStream,
     parse,
