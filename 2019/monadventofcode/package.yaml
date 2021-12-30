@@ -76,7 +76,11 @@ executables:
     dependencies:
     - monadventofcode
     - array
-
+  day19:
+    main:                Main.hs
+    source-dirs:         src/day19
+    dependencies:
+    - monadventofcode
 
 tests:
   monadventofcode-test:
