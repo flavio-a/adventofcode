@@ -81,6 +81,11 @@ executables:
     source-dirs:         src/day19
     dependencies:
     - monadventofcode
+  day21:
+    main:                Main.hs
+    source-dirs:         src/day21
+    dependencies:
+    - monadventofcode
 
 tests:
   monadventofcode-test:
