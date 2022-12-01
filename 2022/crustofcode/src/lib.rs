@@ -15,12 +15,18 @@ pub fn read_input() -> String {
         .expect("Error while reading input file")
 }
 
-// Ideally I should write functions which return iterators (such as
-// content.trim().split("\n")), but I don't know how to specify the return type
-// ^^'
+pub fn str2int<S: AsRef<str>>(s: S) -> i64 {
+    s.as_ref().parse().expect("String parsable to number expected")
+}
 
-pub fn str2int(s: &str) -> i64 {
-    s.parse().expect("String parsable to number expected")
+pub fn lines_owned(s: String) -> Vec<String> {
+    s.lines().map(|s| s.to_owned()).collect()
+}
+
+/// Read an input file (specified as the first CLI argument) and returns a
+/// vector with its lines (owned)
+pub fn read_input_lines() -> Vec<String> {
+    lines_owned(read_input())
 }
 
 /// Parse a string as an integer per line, and returns the resulting vector.
