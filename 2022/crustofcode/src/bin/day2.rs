@@ -21,11 +21,9 @@ fn translate_char(c: char) -> Play {
 fn compare_plays(opp: Play, me: Play) -> i32 {
     if opp == me {
         0
-    }
-    else if me - 1 == opp % 3 {
+    } else if me - 1 == opp % 3 {
         1
-    }
-    else {
+    } else {
         -1
     }
 }
@@ -50,8 +48,8 @@ fn get_score2(&(opp, res): &Round) -> i32 {
 fn main() {
     println!("Day 2");
 
-    let rounds: Vec<Round> =
-        crustofcode::read_input_lines().into_iter()
+    let rounds: Vec<Round> = crustofcode::read_input_lines()
+        .into_iter()
         .map(split_pair)
         .map(|(a, b)| (translate_char(a), translate_char(b)))
         .collect();

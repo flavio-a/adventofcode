@@ -4,8 +4,8 @@ use itertools::Itertools;
 fn main() {
     println!("Day 1");
 
-    let elves: Vec<i64> =
-        crustofcode::read_input_lines().as_slice()
+    let elves: Vec<i64> = crustofcode::read_input_lines()
+        .as_slice()
         .split(|s| s == "")
         .map(|elf| elf.into_iter().map(crustofcode::str2int).sum())
         .collect();

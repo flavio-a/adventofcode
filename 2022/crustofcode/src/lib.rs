@@ -1,5 +1,5 @@
-use std::fs;
 use itertools::Itertools;
+use std::fs;
 
 pub fn read_input() -> String {
     let args: Vec<String> = std::env::args().collect();
@@ -11,12 +11,13 @@ pub fn read_input() -> String {
     let filename = &args[1];
     // println!("Input: {}", filename);
 
-    fs::read_to_string(filename)
-        .expect("Error while reading input file")
+    fs::read_to_string(filename).expect("Error while reading input file")
 }
 
 pub fn str2int<S: AsRef<str>>(s: S) -> i64 {
-    s.as_ref().parse().expect("String parsable to number expected")
+    s.as_ref()
+        .parse()
+        .expect("String parsable to number expected")
 }
 
 pub fn lines_owned(s: String) -> Vec<String> {
@@ -46,10 +47,11 @@ pub fn lines_to_ints(content: String) -> Vec<i64> {
 
 /// Visualize a vector of points in the 2d space
 pub fn visualize(points: Vec<(i64, i64)>) {
-    let sorted = points.into_iter()
-            .sorted_by(|(x1, y1), (x2, y2)| y1.cmp(y2).then(x1.cmp(x2)))
-            .dedup()
-            .collect::<Vec<(i64, i64)>>();
+    let sorted = points
+        .into_iter()
+        .sorted_by(|(x1, y1), (x2, y2)| y1.cmp(y2).then(x1.cmp(x2)))
+        .dedup()
+        .collect::<Vec<(i64, i64)>>();
     let maxx: i64 = *sorted.iter().map(|(x, _)| x).max().unwrap();
     let maxy: i64 = *sorted.iter().map(|(_, y)| y).max().unwrap();
 
@@ -60,8 +62,7 @@ pub fn visualize(points: Vec<(i64, i64)>) {
         if *sorted.get(i).unwrap() == (x, y) {
             print!("█");
             i += 1;
-        }
-        else {
+        } else {
             print!(" ");
         }
         x += 1;
@@ -80,8 +81,7 @@ pub fn visualize_grid(points: &Vec<Vec<bool>>) {
             if dot {
                 // print!("█");
                 print!("#");
-            }
-            else {
+            } else {
                 // print!(" ");
                 print!(".");
             }
