@@ -1,5 +1,6 @@
-use crustofcode;
+use crustofcode::*;
 use slab_tree::*;
+use std::fmt::Debug;
 
 #[derive(Debug)]
 struct File {
@@ -8,7 +9,7 @@ struct File {
 }
 
 #[allow(dead_code)]
-fn print_tree(tree: &Tree<File>) -> () {
+fn print_tree<T: Debug>(tree: &Tree<T>) -> () {
     let mut s = String::new();
     tree.write_formatted(&mut s).unwrap();
     println!("{}", s);
@@ -40,7 +41,7 @@ fn compute_size(tree: &mut Tree<File>, id: NodeId) -> i64 {
 fn main() {
     println!("Day 7");
 
-    let datastream = crustofcode::read_input_lines();
+    let datastream = read_input_lines();
     let mut fs: Tree<File> = TreeBuilder::new()
         .with_capacity(datastream.len())
         .with_root(File {
@@ -53,33 +54,33 @@ fn main() {
     assert_eq!(lines.next(), Some("$ cd /".to_string()));
     for line in lines {
         if line.chars().nth(0) == Some('$') {
-            if &line[2..4] == "cd" {
-                let name = &line[5..];
-                if name == "/" {
-                    curr = fs.root_id().unwrap();
-                } else if name == ".." {
-                    curr = fs.get(curr).unwrap().parent().unwrap().node_id();
-                } else {
-                    curr = fs
-                        .get(curr)
-                        .unwrap()
-                        .children()
-                        .find(|child| child.data().name == name)
-                        .unwrap()
-                        .node_id();
+            let cmd = &line[2..4];
+            match cmd {
+                "cd" => {
+                    let target = &line[5..];
+                    curr = match target {
+                        "/" => fs.root_id().unwrap(),
+                        ".." => fs.get(curr).unwrap().parent().unwrap().node_id(),
+                        _ => fs
+                            .get(curr)
+                            .unwrap()
+                            .children()
+                            .find(|child| child.data().name == target)
+                            .unwrap()
+                            .node_id(),
+                    };
                 }
-            } else if &line[2..4] == "ls" {
-                // Nothing, it processes it afterwards
-            } else {
-                panic!("Unexpexted plot twist!");
+                "ls" => {} // Nothing, it processes it afterwards
+                _ => panic!("Unexpexted plot twist!"),
             }
         } else {
-            let (name, size) = if &line[0..4] == "dir " {
-                (line[4..].to_owned(), None)
+            let ps: Vec<&str> = line.split(' ').collect();
+            assert_eq!(ps.len(), 2);
+            let name = ps[1].to_string();
+            let size = if ps[0] == "dir" {
+                None
             } else {
-                let splits: Vec<&str> = line.split(' ').collect();
-                assert_eq!(splits.len(), 2);
-                (splits[1].to_string(), Some(crustofcode::str2int(splits[0])))
+                Some(str2int(ps[0]))
             };
             let mut curr_mut: NodeMut<File> = fs.get_mut(curr).unwrap();
             curr_mut.append(File {
