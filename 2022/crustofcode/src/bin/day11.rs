@@ -1,6 +1,5 @@
 use crustofcode::*;
 use itertools::Itertools;
-use queues::*;
 
 const TEST_OPS: [fn(i64) -> i64; 4] = [|x| x * 19, |x| x + 6, |x| x * x, |x| x + 3];
 const INPUT_OPS: [fn(i64) -> i64; 8] = [
@@ -14,9 +13,9 @@ const INPUT_OPS: [fn(i64) -> i64; 8] = [
     |x| x + 4,
 ];
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Monkey {
-    items: Queue<i64>,
+    items: Vec<i64>,
     op: fn(i64) -> i64,
     testnum: i64,
     ift: usize,
@@ -31,13 +30,16 @@ impl Monkey {
     }
 
     fn has_item(&self) -> bool {
-        self.items.peek().is_ok()
+        !self.items.is_empty()
     }
 
-    fn throw_item_p1(&mut self) -> Option<(usize, i64)> {
-        let worry_level: i64 = self.items.remove().ok()?;
-        let worry_level = (self.op)(worry_level);
-        let worry_level = worry_level / 3;
+    fn throw_item(&mut self, divide: bool) -> Option<(usize, i64)> {
+        let worry_level: i64 = self.items.pop()?;
+        let worry_level = if divide {
+            (self.op)(worry_level) / 3
+        } else {
+            (self.op)(worry_level) % self.modulus
+        };
         self.activity += 1;
         if self.test(worry_level) {
             Some((self.ift, worry_level))
@@ -46,41 +48,20 @@ impl Monkey {
         }
     }
 
-    fn throw_item_p2(&mut self) -> Option<(usize, i64)> {
-        let worry_level: i64 = self.items.remove().ok()?;
-        let worry_level = (self.op)(worry_level) % self.modulus;
-        self.activity += 1;
-        if self.test(worry_level) {
-            Some((self.ift, worry_level))
-        } else {
-            Some((self.iff, worry_level))
-        }
+    #[allow(dead_code)]
+    fn print_dbg(&self) -> () {
+        println!("Items {:?}, activity {}", self.items, self.activity);
     }
-
-    // // Makes a copy of the monkey, including items it's holding
-    // fn make_fresh_copy(&self) -> Monkey {
-    //     let mut items = queue![];
-    //     return Monkey {
-    //         items: items,
-    //         op: self.op,
-    //         testnum: self.testnum,
-    //         ift: self.ift,
-    //         iff: self.iff,
-    //         activity: 0,
-    //         modulus: 0,
-    //     };
-    // }
 }
 
 fn parse_monkey(m: &[String]) -> Monkey {
     let opidx: usize = str2int(&drop_prefix(&m[0], "Monkey ")[0..1])
         .try_into()
         .unwrap();
-    // let items = drop_prefix(&m[1], "  Starting items: ").split(",").map(|item| str2int(item.trim())).collect();
-    let mut items = queue![];
-    for item in drop_prefix(&m[1], "  Starting items: ").split(",") {
-        items.add(str2int(item.trim())).ok();
-    }
+    let items = drop_prefix(&m[1], "  Starting items: ")
+        .split(",")
+        .map(|item| str2int(item.trim()))
+        .collect();
     let testnum = str2int(drop_prefix(&m[3], "  Test: divisible by ").trim());
     let ift: usize = str2int(drop_prefix(&m[4], "    If true: throw to monkey ").trim())
         .try_into()
@@ -88,9 +69,16 @@ fn parse_monkey(m: &[String]) -> Monkey {
     let iff: usize = str2int(drop_prefix(&m[5], "    If false: throw to monkey ").trim())
         .try_into()
         .unwrap();
+
+    let is_test = std::env::args().nth(1).unwrap().contains("test");
+
     return Monkey {
         items: items,
-        op: INPUT_OPS[opidx],
+        op: if is_test {
+            TEST_OPS[opidx]
+        } else {
+            INPUT_OPS[opidx]
+        },
         testnum: testnum,
         ift: ift,
         iff: iff,
@@ -99,23 +87,11 @@ fn parse_monkey(m: &[String]) -> Monkey {
     };
 }
 
-#[allow(dead_code)]
-fn do_round_p1(monkeys: &mut Vec<Monkey>) -> &mut Vec<Monkey> {
+fn do_round(monkeys: &mut Vec<Monkey>, p1: bool) -> &mut Vec<Monkey> {
     for midx in 0..monkeys.len() {
         while monkeys[midx].has_item() {
-            let (newidx, wl) = monkeys[midx].throw_item_p1().unwrap();
-            monkeys[newidx].items.add(wl).ok();
-        }
-    }
-    return monkeys;
-}
-
-#[allow(dead_code)]
-fn do_round_p2(monkeys: &mut Vec<Monkey>) -> &mut Vec<Monkey> {
-    for midx in 0..monkeys.len() {
-        while monkeys[midx].has_item() {
-            let (newidx, wl) = monkeys[midx].throw_item_p2().unwrap();
-            monkeys[newidx].items.add(wl).ok();
+            let (newidx, wl) = monkeys[midx].throw_item(p1).unwrap();
+            monkeys[newidx].items.push(wl);
         }
     }
     return monkeys;
@@ -145,14 +121,15 @@ fn main() {
     }
 
     // Part 1
-    // for _ in 0..20 {
-    //     do_round_p1(&mut monkeys);
-    // }
-    // println!("{}", get_monkey_buisness(&monkeys));
+    let mut monkeys1: Vec<Monkey> = monkeys.clone();
+    for _ in 0..20 {
+        do_round(&mut monkeys1, true);
+    }
+    println!("{}", get_monkey_buisness(&monkeys1));
 
     // Part 2
     for _ in 0..10000 {
-        do_round_p2(&mut monkeys);
+        do_round(&mut monkeys, false);
     }
     println!("{}", get_monkey_buisness(&monkeys));
 }
