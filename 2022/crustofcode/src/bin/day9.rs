@@ -2,7 +2,6 @@ use crustofcode::*;
 use std::collections::HashSet;
 
 type Move = (char, i64);
-type Pos = (i64, i64);
 
 fn parse_line(s: String) -> Move {
     let splits: Vec<&str> = s.split(' ').collect();
@@ -10,7 +9,7 @@ fn parse_line(s: String) -> Move {
     return (splits[0].chars().nth(0).unwrap(), str2int(splits[1]));
 }
 
-fn dir_to_pos(d: char) -> Pos {
+fn dir_to_point(d: char) -> Point {
     match d {
         'R' => (0, 1),
         'L' => (0, -1),
@@ -20,11 +19,11 @@ fn dir_to_pos(d: char) -> Pos {
     }
 }
 
-fn muovi((px, py): Pos, (dx, dy): Pos) -> Pos {
+fn muovi((px, py): Point, (dx, dy): Point) -> Point {
     (px + dx, py + dy)
 }
 
-fn follow((tx, ty): Pos, (hx, hy): Pos) -> Pos {
+fn follow((tx, ty): Point, (hx, hy): Point) -> Point {
     let dx = hx - tx;
     let dy = hy - ty;
     let mut ax = 0;
@@ -79,12 +78,12 @@ fn main() {
 
     // Part 1
     let mut visited = HashSet::new();
-    let mut posh: Pos = (0, 0);
-    let mut post: Pos = (0, 0);
+    let mut posh: Point = (0, 0);
+    let mut post: Point = (0, 0);
     visited.insert(post);
     for &(dir, l) in &moves {
         for _ in 0..l {
-            posh = muovi(posh, dir_to_pos(dir));
+            posh = muovi(posh, dir_to_point(dir));
             post = follow(post, posh);
             visited.insert(post);
         }
@@ -93,11 +92,11 @@ fn main() {
 
     // Part 2
     let mut visited = HashSet::new();
-    let mut poss: [Pos; 10] = [(0, 0); 10];
+    let mut poss: [Point; 10] = [(0, 0); 10];
     visited.insert(poss[9]);
     for &(dir, l) in &moves {
         for _ in 0..l {
-            poss[0] = muovi(poss[0], dir_to_pos(dir));
+            poss[0] = muovi(poss[0], dir_to_point(dir));
             for i in 1..10 {
                 poss[i] = follow(poss[i], poss[i - 1]);
             }

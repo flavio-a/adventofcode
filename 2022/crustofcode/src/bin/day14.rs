@@ -25,15 +25,13 @@ impl fmt::Display for Cell {
     }
 }
 
-type Point = (i64, i64);
 type Grid = HashMap<Point, Cell>;
 
 #[allow(dead_code)]
 fn show_grid(grid: &Grid) -> () {
-    visualize(
+    visualize_as(
         grid.iter()
-            .map(|((x, y), c)| ((x - 400, *y), (*c).to_char()))
-            .collect(),
+            .map(|((x, y), c)| ((x - 400, *y), (*c).to_char())),
     );
     println!("");
 }

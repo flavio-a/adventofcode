@@ -4,11 +4,10 @@ use std::cmp;
 
 const ROW: i64 = 2000000;
 
-type Pos = (i64, i64);
 type Range = (i64, i64);
-type Sensor = (Pos, Pos);
+type Sensor = (Point, Point);
 
-fn parse_coord(s: &str) -> Pos {
+fn parse_coord(s: &str) -> Point {
     // x=2, y=18
     let mut p = s.split(", ");
     let x = str2int(drop_prefix(p.next().unwrap(), "x="));
@@ -76,7 +75,7 @@ fn main() {
     );
 
     // Part 2
-    let possibles: Vec<Pos> = (0..=ROW * 2)
+    let possibles: Vec<Point> = (0..=ROW * 2)
         .filter_map(|y| Some((scan_line(&sensors, y)?, y)))
         .collect();
     assert_eq!(possibles.len(), 1);

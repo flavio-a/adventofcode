@@ -1,6 +1,8 @@
 use itertools::Itertools;
 use std::fs;
 
+pub type Point = (i64, i64);
+
 pub fn read_input() -> String {
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 2 {
@@ -45,13 +47,16 @@ pub fn lines_to_ints(content: String) -> Vec<i64> {
     content.lines().map(str2int).collect()
 }
 
-/// Visualize a vector of points in the 2d space
-pub fn visualize(points: Vec<((i64, i64), char)>) {
-    let sorted = points
-        .into_iter()
+/// Visualize a vector of points in the 2D space, representing points as the
+/// attached character
+pub fn visualize_as<I>(points: I)
+where
+    I: Iterator<Item = (Point, char)>,
+{
+    let sorted: Vec<(Point, char)> = points
         .sorted_by(|((x1, y1), _), ((x2, y2), _)| y1.cmp(y2).then(x1.cmp(x2)))
         .dedup()
-        .collect::<Vec<((i64, i64), char)>>();
+        .collect();
     let maxx: i64 = *sorted.iter().map(|((x, _), _)| x).max().unwrap();
     let maxy: i64 = *sorted.iter().map(|((_, y), _)| y).max().unwrap();
 
@@ -74,6 +79,14 @@ pub fn visualize(points: Vec<((i64, i64), char)>) {
     }
 }
 
+/// Visualize a vector of points in the 2D space as █
+pub fn visualize<'a, I>(points: I)
+where
+    I: Iterator<Item = &'a Point>,
+{
+    visualize_as(points.map(|&p| (p, '█')));
+}
+
 /// Visualize a grid of bools
 pub fn visualize_grid(points: &Vec<Vec<bool>>) {
     for line in points.iter() {
@@ -82,8 +95,8 @@ pub fn visualize_grid(points: &Vec<Vec<bool>>) {
                 // print!("█");
                 print!("#");
             } else {
-                // print!(" ");
-                print!(".");
+                print!(" ");
+                // print!(".");
             }
         }
         println!("");
