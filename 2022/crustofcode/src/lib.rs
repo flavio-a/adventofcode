@@ -90,8 +90,8 @@ pub fn visualize_grid(points: &Vec<Vec<bool>>) {
     }
 }
 
-pub fn drop_prefix<'a>(s: &'a String, prefix: &str) -> &'a str {
+pub fn drop_prefix<'a>(s: &'a str, prefix: &str) -> &'a str {
     let l = prefix.chars().count();
-    assert_eq!(s[0..l], prefix.to_string());
+    assert_eq!(&s[0..l], prefix.to_string());
     return &s[l..];
 }
