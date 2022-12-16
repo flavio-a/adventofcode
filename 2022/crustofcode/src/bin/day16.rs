@@ -1,5 +1,4 @@
 use crustofcode::*;
-// use itertools::Itertools;
 use pathfinding::directed::dijkstra;
 use std::cmp;
 use std::collections::HashMap;
@@ -185,6 +184,111 @@ fn explore(nodes: &Vec<Node>, node_indices: &Vec<NodeId>, state: &mut ExplState)
     return res;
 }
 
+#[derive(Debug)]
+struct ExplState2 {
+    currs: [NodeId; 2],
+    lefts: [i64; 2],
+    time: i64,
+    opened: i64,
+    released: i64,
+    visited: Vec<bool>,
+}
+
+struct ExplState2Bak {
+    lefts: [i64; 2],
+    time: i64,
+    released: i64,
+}
+
+impl ExplState2 {
+    // Make a backup of (part of) a state
+    fn backup(&self) -> ExplState2Bak {
+        ExplState2Bak {
+            lefts: self.lefts.clone(),
+            time: self.time,
+            released: self.released,
+        }
+    }
+
+    // Restore a backup
+    fn restore(&mut self, state: ExplState2Bak) -> () {
+        self.lefts = state.lefts;
+        self.time = state.time;
+        self.released = state.released;
+    }
+
+    fn get_active(&self) -> usize {
+        if self.lefts[0] == 0 {
+            0
+        } else if self.lefts[1] == 0 {
+            1
+        } else {
+            panic!("AAAAA");
+        }
+    }
+}
+
+fn explore2(
+    nodes: &Vec<Node>,
+    node_indices: &Vec<NodeId>,
+    start_idx: &NodeId,
+    state: &mut ExplState2,
+) -> i64 {
+    let active: usize = state.get_active();
+    let curr = state.currs[active];
+    let curr_node = &nodes[curr];
+    // active reached node curr: if already visited, abort computation,
+    // otherwise open the node
+    if state.visited[curr] && curr != *start_idx {
+        return 0;
+    };
+    state.opened += nodes[curr].flow;
+    state.visited[curr] = true;
+
+    let mut res = 0;
+    let mut finished = true;
+    for target in node_indices {
+        if !(state.visited[*target]) {
+            finished = false;
+            // active now sets out for target
+            let d = curr_node.distances[*target] + 1;
+            // These changes are undone just once before returning to the caller
+            state.currs[active] = *target;
+            state.lefts[active] = d;
+            // Wait time until one of the two reaches its destination
+            let dt = cmp::min(state.lefts[0], state.lefts[1]);
+            if dt > state.time {
+                // Neither reaches their target in time
+                let tmp = state.released + state.opened * state.time;
+                res = cmp::max(res, tmp);
+            } else {
+                let backup = state.backup();
+                state.time -= dt;
+                state.lefts[0] -= dt;
+                state.lefts[1] -= dt;
+                state.released += state.opened * dt;
+                // Recursion
+                let tmp = explore2(nodes, node_indices, start_idx, state);
+                res = cmp::max(res, tmp);
+                // Undo changes
+                state.restore(backup);
+            }
+        }
+    }
+    if finished {
+        // Visited all nodes, you only have to wait for time to finish.
+        assert_eq!(res, 0);
+        res = state.released + state.opened * state.time;
+    }
+    // Undo exploration of this node before returning
+    state.opened -= nodes[curr].flow;
+    state.visited[curr] = false;
+    state.currs[active] = curr;
+    // state.lefts[active] = 0;
+    // Returns
+    return res;
+}
+
 fn main() {
     println!("Day 16");
 
@@ -193,14 +297,27 @@ fn main() {
 
     println!("Number of nonzero nodes: {}", node_indices.len());
     let start_idx: NodeId = nodes.iter().position(|n| n.name == "AA").unwrap();
-    println!("Starting idx: {}", start_idx);
-    // println!("{:?}", node_indices.iter().map(|&i| (i, &nodes[i].name)).collect::<Vec<(NodeId, &NodeName)>>());
+    // println!("Starting idx: {}", start_idx);
+    // println!(
+    //     "{:?}",
+    //     node_indices
+    //         .iter()
+    //         .map(|&i| (i, &nodes[i].name))
+    //         .collect::<Vec<(NodeId, &NodeName)>>()
+    // );
     // for node in &nodes {
     //     if node.flow > 0 {
     //         println!("{} ({})", node.name, node.flow);
-    //         println!("{:?}", node.distances.iter().filter(|(i, _)| node_indices.iter().find(|v| v == i).is_some()).map(|(i, (_, d))| (&nodes[*i].name, d)).collect::<Vec<(&NodeName, &i64)>>())
+    //         println!(
+    //             "{:?}",
+    //             node.distances
+    //                 .iter()
+    //                 .filter(|(i, _)| node_indices.iter().find(|v| v == i).is_some())
+    //                 .map(|(i, (_, d))| (&nodes[*i].name, d))
+    //                 .collect::<Vec<(&NodeName, &i64)>>()
+    //         )
     //     };
-    // };
+    // }
 
     // Part 1
     let mut initial_state = ExplState {
@@ -213,5 +330,16 @@ fn main() {
     println!("{}", explore(&nodes, &node_indices, &mut initial_state));
 
     // Part 2
-    println!("{}", 0);
+    let mut initial_state2 = ExplState2 {
+        currs: [start_idx, start_idx],
+        lefts: [0, 0],
+        time: 26,
+        opened: 0,
+        released: 0,
+        visited: vec![false; nodes.len()],
+    };
+    println!(
+        "{}",
+        explore2(&nodes, &node_indices, &start_idx, &mut initial_state2)
+    );
 }
