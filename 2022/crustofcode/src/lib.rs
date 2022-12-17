@@ -2,6 +2,7 @@ use itertools::Itertools;
 use std::fs;
 
 pub type Point = (i64, i64);
+pub type UPoint = (usize, usize);
 
 pub fn read_input() -> String {
     let args: Vec<String> = std::env::args().collect();
