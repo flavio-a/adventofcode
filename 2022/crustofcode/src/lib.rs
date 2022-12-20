@@ -109,3 +109,17 @@ pub fn drop_prefix<'a>(s: &'a str, prefix: &str) -> &'a str {
     assert_eq!(&s[0..l], prefix.to_string());
     return &s[l..];
 }
+
+pub fn fst<T, U>(&(x, _): &(T, U)) -> T
+where
+    T: Copy,
+{
+    x
+}
+
+pub fn snd<T, U>(&(_, x): &(T, U)) -> U
+where
+    U: Copy,
+{
+    x
+}
