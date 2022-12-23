@@ -123,3 +123,7 @@ where
 {
     x
 }
+
+pub fn into_snd<T, U>((_, x): (T, U)) -> U {
+    x
+}
