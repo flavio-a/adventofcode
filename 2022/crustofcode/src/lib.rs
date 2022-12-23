@@ -117,6 +117,10 @@ where
     x
 }
 
+pub fn into_fst<T, U>((x, _): (T, U)) -> T {
+    x
+}
+
 pub fn snd<T, U>(&(_, x): &(T, U)) -> U
 where
     U: Copy,
