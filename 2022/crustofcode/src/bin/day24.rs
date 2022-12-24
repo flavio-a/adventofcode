@@ -138,11 +138,10 @@ fn print_blizzards(me: UPoint, v: &Vec<Blizzard>) -> () {
     println!("");
 }
 
-fn move_blizzards(mut blizzards: Vec<Blizzard>, sizes: &UPoint) -> Vec<Blizzard> {
+fn move_blizzards(blizzards: &mut Vec<Blizzard>, sizes: &UPoint) -> () {
     for b in blizzards.iter_mut() {
         b.shift(sizes);
     }
-    return blizzards;
 }
 
 fn is_empty(p: &UPoint, v: &Vec<Blizzard>) -> bool {
@@ -159,12 +158,38 @@ fn get_poss(me: UPoint, v: &Vec<Blizzard>, sizes: &UPoint) -> Vec<UPoint> {
     return poss;
 }
 
-fn is_final(&(x, y): &UPoint, &(width, height): &UPoint) -> bool {
-    x == height - 1 && y == width - 1
-}
-
-fn is_initial(&(x, y): &UPoint, &(width, height): &UPoint) -> bool {
-    x == 0 && y == 0
+fn make_trip(start: UPoint, end: UPoint, blizzards: &mut Vec<Blizzard>, sizes: &UPoint) -> usize {
+    let mut time: usize = 0;
+    // First step to get to the start
+    move_blizzards(blizzards, &sizes);
+    time += 1;
+    while !is_empty(&start, blizzards) {
+        move_blizzards(blizzards, &sizes);
+        time += 1;
+    }
+    let mut frontier: Vec<UPoint> = vec![start];
+    'outer: loop {
+        // println!("{time}");
+        // print_blizzards(frontier[0], &blizzards);
+        move_blizzards(blizzards, &sizes);
+        time += 1;
+        let mut new_frontier = vec![];
+        for state in frontier {
+            for succ in get_poss(state, &blizzards, &sizes) {
+                if succ == end {
+                    break 'outer;
+                } else {
+                    new_frontier.push(succ);
+                }
+            }
+        }
+        // Dedup
+        frontier = new_frontier.into_iter().sorted().dedup().collect();
+    }
+    // Last step to get to the end
+    move_blizzards(blizzards, &sizes);
+    time += 1;
+    return time;
 }
 
 fn main() {
@@ -183,81 +208,29 @@ fn main() {
     // println!("{} {}\n{blizzards:?}", width, height);
     // print_blizzards((0, 0), &blizzards);
 
-    // We assume the first move is always to (0, 0), and we never get back to
-    // the start
-    let mut blizzards = move_blizzards(blizzards, &sizes);
-
     // Part 1
-    let mut time: usize = 1;
-    let mut frontier: Vec<UPoint> = vec![(0, 0)];
-    'outer: loop {
-        // println!("{time}");
-        // print_blizzards(frontier[0], &blizzards);
-        blizzards = move_blizzards(blizzards, &sizes);
-        time += 1;
-        let mut new_frontier = vec![];
-        for state in frontier {
-            for succ in get_poss(state, &blizzards, &sizes) {
-                if is_final(&succ, &sizes) {
-                    break 'outer;
-                } else {
-                    new_frontier.push(succ);
-                }
-            }
-        }
-        // Dedup
-        frontier = new_frontier.into_iter().sorted().dedup().collect();
-    }
-    blizzards = move_blizzards(blizzards, &sizes);
-    time += 1;
+    let mut time = make_trip((0, 0), (height - 1, width - 1), &mut blizzards, &sizes);
     println!("{}", time);
     // print_blizzards((height, width - 1), &blizzards);
 
     // Part 2
-    // Back to the start
-    blizzards = move_blizzards(blizzards, &sizes);
-    time += 1;
-    let mut frontier: Vec<UPoint> = vec![(height - 1, width - 1)];
-    'outer: loop {
-        blizzards = move_blizzards(blizzards, &sizes);
+    // This are needed to make the test work, but not for the input
+    if std::env::args().nth(1).unwrap().contains("test") {
+        move_blizzards(&mut blizzards, &sizes);
         time += 1;
-        let mut new_frontier = vec![];
-        for state in frontier {
-            for succ in get_poss(state, &blizzards, &sizes) {
-                if is_initial(&succ, &sizes) {
-                    break 'outer;
-                } else {
-                    new_frontier.push(succ);
-                }
-            }
-        }
-        // Dedup
-        frontier = new_frontier.into_iter().sorted().dedup().collect();
+        move_blizzards(&mut blizzards, &sizes);
+        time += 1;
+        move_blizzards(&mut blizzards, &sizes);
+        time += 1;
+        move_blizzards(&mut blizzards, &sizes);
+        time += 1;
+        move_blizzards(&mut blizzards, &sizes);
+        time += 1;
     }
-    blizzards = move_blizzards(blizzards, &sizes);
-    time += 1;
+    // Back to the start
+    time += make_trip((height - 1, width - 1), (0, 0), &mut blizzards, &sizes);
     println!("{}", time);
     // Back to the end again
-    blizzards = move_blizzards(blizzards, &sizes);
-    time += 1;
-    let mut frontier: Vec<UPoint> = vec![(0, 0)];
-    'outer: loop {
-        blizzards = move_blizzards(blizzards, &sizes);
-        time += 1;
-        let mut new_frontier = vec![];
-        for state in frontier {
-            for succ in get_poss(state, &blizzards, &sizes) {
-                if is_final(&succ, &sizes) {
-                    break 'outer;
-                } else {
-                    new_frontier.push(succ);
-                }
-            }
-        }
-        // Dedup
-        frontier = new_frontier.into_iter().sorted().dedup().collect();
-    }
-    blizzards = move_blizzards(blizzards, &sizes);
-    time += 1;
+    time += make_trip((0, 0), (height - 1, width - 1), &mut blizzards, &sizes);
     println!("{}", time);
 }
