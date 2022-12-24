@@ -56,7 +56,7 @@ where
 {
     let sorted: Vec<(Point, char)> = points
         .sorted_by(|((x1, y1), _), ((x2, y2), _)| y1.cmp(y2).then(x1.cmp(x2)))
-        .dedup()
+        .dedup_by(|(p1, _), (p2, _)| p1 == p2)
         .collect();
     let maxx: i64 = *sorted.iter().map(|((x, _), _)| x).max().unwrap();
     let maxy: i64 = *sorted.iter().map(|((_, y), _)| y).max().unwrap();
@@ -130,4 +130,12 @@ where
 
 pub fn into_snd<T, U>((_, x): (T, U)) -> U {
     x
+}
+
+pub fn point_transpose<T>((x, y): (T, T)) -> (T, T) {
+    (y, x)
+}
+
+pub fn up2p((x, y): UPoint) -> Point {
+    (x.try_into().unwrap(), y.try_into().unwrap())
 }
