@@ -50,19 +50,10 @@ where
     return res;
 }
 
-// Up, Left, Down, Right
-type Neighbours = [UPoint; 4];
-
 #[derive(Debug, Clone)]
 struct BoardNeighs {
     board: Board,
     neighbours: Vec<Vec<Neighbours>>,
-}
-
-impl BoardNeighs {
-    fn get_neighs(&self, (x, y): UPoint) -> Neighbours {
-        self.neighbours[x][y - self.board.starts[x]]
-    }
 }
 
 impl Board {
@@ -99,17 +90,29 @@ impl Board {
 
     fn get_neighbours_pos(&self, (x, y): UPoint) -> Neighbours {
         return [
-            self.get_up((x, y)),
-            (
-                x,
-                ((y - self.starts[x]) + self.rows[x].len() - 1) % self.rows[x].len()
-                    + self.starts[x],
-            ),
-            self.get_down((x, y)),
-            (
-                x,
-                ((y - self.starts[x]) + 1) % self.rows[x].len() + self.starts[x],
-            ),
+            State {
+                pos: self.get_up((x, y)),
+                dir: Dir::Up,
+            },
+            State {
+                pos: (
+                    x,
+                    ((y - self.starts[x]) + self.rows[x].len() - 1) % self.rows[x].len()
+                        + self.starts[x],
+                ),
+                dir: Dir::Left,
+            },
+            State {
+                pos: self.get_down((x, y)),
+                dir: Dir::Down,
+            },
+            State {
+                pos: (
+                    x,
+                    ((y - self.starts[x]) + 1) % self.rows[x].len() + self.starts[x],
+                ),
+                dir: Dir::Right,
+            },
         ];
     }
 
@@ -128,43 +131,281 @@ impl Board {
         };
     }
 
-    // // This shit is taylored to my input, but I don't care
-    // fn get_x_minus2(&self, (x, y): UPoint) -> UPoint {
-    //     if x == 0 {
-    //         if 50 <= y && y < 100 {
-    //             (149, y)
-    //         }
-    //         else if 100 <= y && y < 150 {
+    // This shit is taylored to my input, but I don't care
+    #[allow(unused_comparisons)]
+    fn get_x_minus2(&self, (x, y): UPoint) -> State {
+        if x == 0 {
+            if 50 <= y && y < 100 {
+                // (0, 1-2) -> (3-4, 0)
+                // 50-99 => 150-199
+                State {
+                    pos: (100 + y, 0),
+                    dir: Dir::Right,
+                }
+            } else if 100 <= y && y < 150 {
+                // (0, 2-3) -> (4, 0-1)
+                // 100, 149 => 0-49
+                State {
+                    pos: (199, y - 100),
+                    dir: Dir::Up,
+                }
+            } else {
+                panic!("AAAA");
+            }
+        } else if x == 50 {
+            if 50 <= y && y < 100 {
+                // (1, 1-2) -> (1, 1-2)
+                State {
+                    pos: (49, y),
+                    dir: Dir::Up,
+                }
+            } else {
+                panic!("AAAA");
+            }
+        } else if x == 100 {
+            if 0 <= y && y < 50 {
+                // (2, 0-1) -> (1-2, 1)
+                // 0, 49 => 50, 99
+                State {
+                    pos: (50 + y, 50),
+                    dir: Dir::Right,
+                }
+            } else if 50 <= y && y < 100 {
+                // (2, 1-2) -> (2, 1-2)
+                State {
+                    pos: (99, y),
+                    dir: Dir::Up,
+                }
+            } else {
+                panic!("AAAAA");
+            }
+        } else if x == 150 {
+            if 0 <= y && y < 50 {
+                // (3, 0-1) -> (3, 0-1)
+                State {
+                    pos: (149, y),
+                    dir: Dir::Up,
+                }
+            } else {
+                panic!("AAAAA");
+            }
+        } else {
+            State {
+                pos: (x - 1, y),
+                dir: Dir::Up,
+            }
+        }
+    }
 
-    //         }
-    //         else {
-    //             panic!("AAAA");
-    //         }
-    //     }
-    //     else {
+    #[allow(unused_comparisons)]
+    fn get_x_plus2(&self, (x, y): UPoint) -> State {
+        if x == 49 {
+            if 50 <= y && y < 100 {
+                // (1, 1-2) => (1, 1-2)
+                State {
+                    pos: (50, y),
+                    dir: Dir::Down,
+                }
+            } else if 100 <= y && y < 150 {
+                // (1, 2-3) -> (1-2, 2)
+                // 100-149 => 50-99
+                State {
+                    pos: (y - 50, 99),
+                    dir: Dir::Left,
+                }
+            } else {
+                panic!("AAAAA");
+            }
+        } else if x == 99 {
+            if 50 <= y && y < 100 {
+                // (2, 1-2) -> (2, 1-2)
+                State {
+                    pos: (100, y),
+                    dir: Dir::Down,
+                }
+            } else {
+                panic!("AAAAA");
+            }
+        } else if x == 149 {
+            if 0 <= y && y < 50 {
+                // (3, 0-1) -> (3, 0-1)
+                State {
+                    pos: (150, y),
+                    dir: Dir::Down,
+                }
+            } else if 50 <= y && y < 100 {
+                // (3, 1-2) -> (3-4, 1)
+                // 50-99 => 150-199
+                State {
+                    pos: (100 + y, 49),
+                    dir: Dir::Left,
+                }
+            } else {
+                panic!("AAAAA");
+            }
+        } else if x == 199 {
+            if 0 <= y && y < 50 {
+                // (4, 0-1) -> (0, 2-3)
+                // 0-49 => 100-149
+                State {
+                    pos: (0, 100 + y),
+                    dir: Dir::Down,
+                }
+            } else {
+                panic!("AAAAA");
+            }
+        } else {
+            State {
+                pos: (x + 1, y),
+                dir: Dir::Down,
+            }
+        }
+    }
 
-    //     }
-    // }
+    #[allow(unused_comparisons)]
+    fn get_y_minus2(&self, (x, y): UPoint) -> State {
+        if y == 0 {
+            if 100 <= x && x < 150 {
+                // (2-3, 0) -> (1-0, 1)
+                // 100-149 => 49-0
+                State {
+                    pos: (149 - x, 50),
+                    dir: Dir::Right,
+                }
+            } else if 150 <= x && x < 200 {
+                // (3-4, 0) -> (0, 1-2)
+                // 150-199 => 50-99
+                State {
+                    pos: (0, x - 100),
+                    dir: Dir::Down,
+                }
+            } else {
+                panic!("AAAAA");
+            }
+        } else if y == 50 {
+            if 0 <= x && x < 50 {
+                // (0-1, 1) -> (3-2, 0)
+                // 0-49 => 149-100
+                State {
+                    pos: (149 - x, 0),
+                    dir: Dir::Right,
+                }
+            } else if 50 <= x && x < 100 {
+                // (1-2, 1) -> (2, 0-1)
+                // 50-99 => 0-49
+                State {
+                    pos: (100, x - 50),
+                    dir: Dir::Down,
+                }
+            } else if 100 <= x && x < 150 {
+                // (2-3, 1) -> (2-3, 1)
+                State {
+                    pos: (x, 49),
+                    dir: Dir::Left,
+                }
+            } else {
+                panic!("AAAAA");
+            }
+        } else if y == 100 {
+            if 0 <= x && x < 50 {
+                // (0-1, 2) -> (0-1, 2)
+                State {
+                    pos: (x, 99),
+                    dir: Dir::Left,
+                }
+            } else {
+                panic!("AAAAA");
+            }
+        } else {
+            State {
+                pos: (x, y - 1),
+                dir: Dir::Left,
+            }
+        }
+    }
 
-    // fn get_neighbours_pos2(&self, (x, y): UPoint) -> Neighbours {
-    //     return [
-    //     ];
-    // }
+    #[allow(unused_comparisons)]
+    fn get_y_plus2(&self, (x, y): UPoint) -> State {
+        if y == 49 {
+            if 100 <= x && x < 150 {
+                // (2-3, 1) -> (2-3, 1)
+                State {
+                    pos: (x, 50),
+                    dir: Dir::Right,
+                }
+            } else if 150 <= x && x < 200 {
+                // (3-4, 1) -> (3, 1-2)
+                // 150-199 => 50-99
+                State {
+                    pos: (149, x - 100),
+                    dir: Dir::Up,
+                }
+            } else {
+                panic!("AAAAA");
+            }
+        } else if y == 99 {
+            if 0 <= x && x < 50 {
+                // (0-1, 2) -> (0-1, 2)
+                State {
+                    pos: (x, 100),
+                    dir: Dir::Right,
+                }
+            } else if 50 <= x && x < 100 {
+                // (1-2, 2) -> (1, 2-3)
+                State {
+                    pos: (49, x + 50),
+                    dir: Dir::Up,
+                }
+            } else if 100 <= x && x < 150 {
+                // (2-3, 2) -> (1-0, 3)
+                State {
+                    pos: (149 - x, 149),
+                    dir: Dir::Left,
+                }
+            } else {
+                panic!("AAAAA");
+            }
+        } else if y == 149 {
+            if 0 <= x && x < 50 {
+                // (0-1, 3) -> (3-2, 2)
+                State {
+                    pos: (149 - x, 99),
+                    dir: Dir::Left,
+                }
+            } else {
+                panic!("AAAAA");
+            }
+        } else {
+            State {
+                pos: (x, y + 1),
+                dir: Dir::Right,
+            }
+        }
+    }
 
-    // fn get_neighbours2(self) -> BoardNeighs {
-    //     let mut res = vec![];
-    //     for x in 0..self.height {
-    //         let max = self.starts[x] + self.rows[x].len();
-    //         res.push(vec![]);
-    //         for y in self.starts[x]..max {
-    //             res[x].push(self.get_neighbours_pos2((x, y)));
-    //         }
-    //     }
-    //     return BoardNeighs {
-    //         board: self,
-    //         neighbours: res,
-    //     };
-    // }
+    fn get_neighbours_pos2(&self, p: UPoint) -> Neighbours {
+        [
+            self.get_x_minus2(p),
+            self.get_y_minus2(p),
+            self.get_x_plus2(p),
+            self.get_y_plus2(p),
+        ]
+    }
+
+    fn get_neighbours2(self) -> BoardNeighs {
+        let mut res = vec![];
+        for x in 0..self.height {
+            let max = self.starts[x] + self.rows[x].len();
+            res.push(vec![]);
+            for y in self.starts[x]..max {
+                res[x].push(self.get_neighbours_pos2((x, y)));
+            }
+        }
+        return BoardNeighs {
+            board: self,
+            neighbours: res,
+        };
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -226,15 +467,25 @@ struct State {
     dir: Dir,
 }
 
+// Up, Left, Down, Right
+type Neighbours = [State; 4];
+
+impl BoardNeighs {
+    fn get_neighs<'a>(&'a self, (x, y): UPoint) -> &'a Neighbours {
+        &self.neighbours[x][y - self.board.starts[x]]
+    }
+}
+
 impl State {
     fn move_one(&mut self, board: &BoardNeighs) -> bool {
         // println!("Neighs of {:?}: {:?}", self.pos, board.get_neighs(self.pos));
         // println!("{}", self.dir.to_idx());
-        let newpos = board.get_neighs(self.pos)[self.dir.to_idx()];
-        if !board.board.is_empty(&newpos) {
+        let news = &board.get_neighs(self.pos)[self.dir.to_idx()];
+        if !board.board.is_empty(&news.pos) {
             return false;
         }
-        self.pos = newpos;
+        self.pos = news.pos;
+        self.dir = news.dir.clone();
         return true;
     }
 
@@ -248,7 +499,7 @@ impl State {
                 break;
             }
         }
-        newstate.dir = self.dir.rotate(&m.1);
+        newstate.dir = newstate.dir.rotate(&m.1);
         return newstate;
     }
 
@@ -265,9 +516,9 @@ fn main() {
     let board = parse_board(&mut pieces.next().unwrap().into_iter());
     let path = parse_path(pieces.next().unwrap()[0].clone());
     assert_eq!(pieces.next(), None);
-    let ns = board.get_neighbours();
 
     // Part 1
+    let ns = board.clone().get_neighbours();
     let mut pos = State {
         pos: (0, ns.board.starts[0]),
         dir: Dir::Right,
@@ -279,5 +530,13 @@ fn main() {
     println!("{}", pos.get_value());
 
     // Part 2
-    println!("{}", 0);
+    let ns = board.get_neighbours2();
+    let mut pos = State {
+        pos: (0, ns.board.starts[0]),
+        dir: Dir::Right,
+    };
+    for mossa in &path {
+        pos = pos.apply_move(mossa, &ns);
+    }
+    println!("{}", pos.get_value());
 }
