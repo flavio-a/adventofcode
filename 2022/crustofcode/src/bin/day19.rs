@@ -1,8 +1,6 @@
 use crustofcode::*;
 use std::str::FromStr;
 
-const PRINT: bool = false;
-
 #[derive(Debug, Clone)]
 struct Blueprint {
     ore: i64,
@@ -57,7 +55,7 @@ impl FromStr for Blueprint {
 
 impl Blueprint {
     fn max_ore(&self) -> i64 {
-        [self.ore, self.clay, self.obsidian.0, self.geode.0]
+        [self.clay, self.obsidian.0, self.geode.0]
             .into_iter()
             .max()
             .unwrap()
@@ -72,17 +70,13 @@ struct Store {
     geodes: i64,
 }
 
-impl Store {
-    fn le(a: &Store, b: &Store) -> bool {
-        a.ore <= b.ore && a.clay <= b.clay && a.obsidian <= b.obsidian && a.geodes <= b.geodes
-    }
-}
-
 #[derive(Debug, Clone)]
 struct State {
     store: Store,
     robots: Store,
 }
+
+type Choice = usize;
 
 impl State {
     fn step(&self) -> State {
@@ -97,75 +91,94 @@ impl State {
         }
     }
 
-    fn choices(&self, bp: &Blueprint) -> Vec<State> {
-        let mut res = vec![self.step()];
+    fn choices(&self, bp: &Blueprint) -> Vec<(State, Choice)> {
+        let mut res = vec![(self.step(), 0)];
         if self.robots.ore < bp.max_ore() && self.store.ore >= bp.ore {
             let mut new_state = self.step();
             new_state.robots.ore += 1;
             new_state.store.ore -= bp.ore;
-            res.push(new_state);
+            res.push((new_state, 1));
         }
+        // The (self.store.ore - self.robots.ore < bp.clay) part is not totally
+        // right, but drops lots of paths and only breaks when clay cost really
+        // few ores
         if self.store.ore >= bp.clay && self.store.ore - self.robots.ore < bp.clay {
             let mut new_state = self.step();
             new_state.robots.clay += 1;
             new_state.store.ore -= bp.clay;
-            res.push(new_state);
+            res.push((new_state, 2));
         }
         if self.store.ore >= bp.obsidian.0 && self.store.clay >= bp.obsidian.1 {
             let mut new_state = self.step();
             new_state.robots.obsidian += 1;
             new_state.store.ore -= bp.obsidian.0;
             new_state.store.clay -= bp.obsidian.1;
-            res.push(new_state);
+            res.push((new_state, 3));
         }
         if self.store.ore >= bp.geode.0 && self.store.obsidian >= bp.geode.1 {
             let mut new_state = self.step();
             new_state.robots.geodes += 1;
             new_state.store.ore -= bp.geode.0;
             new_state.store.obsidian -= bp.geode.1;
-            res.push(new_state);
+            res.push((new_state, 4));
         }
         return res;
     }
 
-    fn le(a: &State, b: &State) -> bool {
-        Store::le(&a.store, &b.store) && Store::le(&a.robots, &b.robots)
+    fn choices_heuristics(&self, bp: &Blueprint) -> Vec<(State, Choice)> {
+        let mut res = vec![];
+        if self.robots.ore < bp.max_ore() {
+            res.push((self.step(), 0));
+        }
+        if self.robots.ore < bp.max_ore() && self.store.ore >= bp.ore {
+            let mut new_state = self.step();
+            new_state.robots.ore += 1;
+            new_state.store.ore -= bp.ore;
+            res.push((new_state, 1));
+        }
+        // The (self.store.ore - self.robots.ore < bp.clay) part is not totally
+        // right, but drops lots of paths and only breaks when clay cost really
+        // few ores
+        if self.store.ore >= bp.clay && self.store.ore - self.robots.ore < bp.clay {
+            let mut new_state = self.step();
+            new_state.robots.clay += 1;
+            new_state.store.ore -= bp.clay;
+            res.push((new_state, 2));
+        }
+        if self.store.ore >= bp.geode.0 && self.store.obsidian >= bp.geode.1 {
+            let mut new_state = self.step();
+            new_state.robots.geodes += 1;
+            new_state.store.ore -= bp.geode.0;
+            new_state.store.obsidian -= bp.geode.1;
+            res.push((new_state, 4));
+        }
+        // Push obsidian only if it can't push geodes
+        else if self.store.ore >= bp.obsidian.0 && self.store.clay >= bp.obsidian.1 {
+            let mut new_state = self.step();
+            new_state.robots.obsidian += 1;
+            new_state.store.ore -= bp.obsidian.0;
+            new_state.store.clay -= bp.obsidian.1;
+            res.push((new_state, 3));
+        }
+        if res.is_empty() {
+            res.push((self.step(), 0));
+        }
+        return res;
     }
 }
 
-fn explore(step: usize, state: State, bp: &Blueprint, bests: &mut Vec<Vec<State>>) -> State {
-    // let cusu = bests[step].iter().find(|s| State::le(&state, s));
-    // if cusu.is_some() {
-    //     // There is a better state at the same number of step
-    //     let e = Store { ore: 0, clay: 0, obsidian: 0, geodes: 0 };
-    //     return State { store: e.clone(), robots: e };
-    // }
-    // // Drop all states which are worse than the current one
-    // bests[step].retain(|s| !State::le(s, &state));
+fn explore(step: usize, state: State, bp: &Blueprint) -> State {
     if step == 0 {
         return state;
     }
-    if PRINT {
-        println!("---- {step} (");
-    };
     // Try all choices
     let res = state
         .choices(bp)
         .into_iter()
-        .map(|s| {
-            if PRINT {
-                println!("{s:?}");
-            };
-            let r = explore(step - 1, s, bp, bests);
-            return r;
-        })
+        .map(|(s, _)| explore(step - 1, s, bp))
         .max_by_key(|s| s.store.geodes)
         .unwrap();
-    // bests[step].push(state);
     // Return
-    if PRINT {
-        println!("----)");
-    };
     return res;
 }
 
@@ -184,10 +197,51 @@ fn get_geodes(bp: &Blueprint, steps: usize) -> i64 {
             geodes: 0,
         },
     };
-    let mut bests = vec![vec![]; steps + 1];
-    let s = explore(steps, initial_state, bp, &mut bests);
-    println!("Result {s:?}");
+    // let mut bests = vec![vec![]; steps + 1];
+    let s = explore(steps, initial_state, bp);
+    println!("{s:?}");
     return s.store.geodes;
+}
+
+fn explore2(step: usize, state: State, bp: &Blueprint) -> (State, Vec<usize>) {
+    if step == 0 {
+        return (state, vec![]);
+    }
+    // Try all choices
+    let res = state
+        .choices_heuristics(bp)
+        .into_iter()
+        .map(|(s, c)| {
+            let (s1, mut v) = explore2(step - 1, s, bp);
+            v.push(c);
+            return (s1, v);
+        })
+        .max_by_key(|(s, _)| s.store.geodes)
+        .unwrap();
+    // Return
+    return res;
+}
+
+fn get_geodes2(bp: &Blueprint, steps: usize) -> i64 {
+    let initial_state = State {
+        store: Store {
+            ore: 0,
+            clay: 0,
+            obsidian: 0,
+            geodes: 0,
+        },
+        robots: Store {
+            ore: 1,
+            clay: 0,
+            obsidian: 0,
+            geodes: 0,
+        },
+    };
+    // Makes some assumption on the blueprint
+    // assert_eq!(bp.ore, bp.clay);
+    let s = explore2(steps, initial_state, bp);
+    println!("{s:?}");
+    return s.0.store.geodes;
 }
 
 fn main() {
@@ -198,23 +252,22 @@ fn main() {
         .map(|s| s.parse().unwrap())
         .collect();
 
-    // get_geodes(&blueprints[0]);
-    // println!(
-    //     "{:?}",
-    //     blueprints.iter().map(get_geodes).collect::<Vec<i64>>()
-    // );
-
     // Part 1
+    let results1: Vec<i64> = blueprints.iter().map(|bp| get_geodes(bp, 24)).collect();
     println!(
         "{:?}",
-        blueprints
-            .iter()
-            .map(|bp| get_geodes(bp, 24))
+        results1
+            .into_iter()
             .enumerate()
             .map(|(i, g)| g * i64::try_from(i + 1).unwrap())
             .sum::<i64>()
     );
 
     // Part 2
-    // println!("{}", 0);
+    let results2: Vec<i64> = blueprints
+        .iter()
+        .take(3)
+        .map(|bp| get_geodes2(bp, 32))
+        .collect();
+    println!("{}", results2.into_iter().product::<i64>());
 }
