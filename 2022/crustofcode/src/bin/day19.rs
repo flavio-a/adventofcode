@@ -91,40 +91,6 @@ impl State {
         }
     }
 
-    fn choices(&self, bp: &Blueprint) -> Vec<(State, Choice)> {
-        let mut res = vec![(self.step(), 0)];
-        if self.robots.ore < bp.max_ore() && self.store.ore >= bp.ore {
-            let mut new_state = self.step();
-            new_state.robots.ore += 1;
-            new_state.store.ore -= bp.ore;
-            res.push((new_state, 1));
-        }
-        // The (self.store.ore - self.robots.ore < bp.clay) part is not totally
-        // right, but drops lots of paths and only breaks when clay cost really
-        // few ores
-        if self.store.ore >= bp.clay && self.store.ore - self.robots.ore < bp.clay {
-            let mut new_state = self.step();
-            new_state.robots.clay += 1;
-            new_state.store.ore -= bp.clay;
-            res.push((new_state, 2));
-        }
-        if self.store.ore >= bp.obsidian.0 && self.store.clay >= bp.obsidian.1 {
-            let mut new_state = self.step();
-            new_state.robots.obsidian += 1;
-            new_state.store.ore -= bp.obsidian.0;
-            new_state.store.clay -= bp.obsidian.1;
-            res.push((new_state, 3));
-        }
-        if self.store.ore >= bp.geode.0 && self.store.obsidian >= bp.geode.1 {
-            let mut new_state = self.step();
-            new_state.robots.geodes += 1;
-            new_state.store.ore -= bp.geode.0;
-            new_state.store.obsidian -= bp.geode.1;
-            res.push((new_state, 4));
-        }
-        return res;
-    }
-
     fn choices_heuristics(&self, bp: &Blueprint) -> Vec<(State, Choice)> {
         let mut res = vec![];
         if self.robots.ore < bp.max_ore() {
@@ -167,42 +133,8 @@ impl State {
     }
 }
 
-fn explore(step: usize, state: State, bp: &Blueprint) -> State {
-    if step == 0 {
-        return state;
-    }
-    // Try all choices
-    let res = state
-        .choices(bp)
-        .into_iter()
-        .map(|(s, _)| explore(step - 1, s, bp))
-        .max_by_key(|s| s.store.geodes)
-        .unwrap();
-    // Return
-    return res;
-}
-
-fn get_geodes(bp: &Blueprint, steps: usize) -> i64 {
-    let initial_state = State {
-        store: Store {
-            ore: 0,
-            clay: 0,
-            obsidian: 0,
-            geodes: 0,
-        },
-        robots: Store {
-            ore: 1,
-            clay: 0,
-            obsidian: 0,
-            geodes: 0,
-        },
-    };
-    // let mut bests = vec![vec![]; steps + 1];
-    let s = explore(steps, initial_state, bp);
-    println!("{s:?}");
-    return s.store.geodes;
-}
-
+// The bookkeeping for the choices is actually very slow (~ 2x execution time)
+#[cfg(debug_assertions)]
 fn explore2(step: usize, state: State, bp: &Blueprint) -> (State, Vec<usize>) {
     if step == 0 {
         return (state, vec![]);
@@ -216,6 +148,22 @@ fn explore2(step: usize, state: State, bp: &Blueprint) -> (State, Vec<usize>) {
             v.push(c);
             return (s1, v);
         })
+        .max_by_key(|(s, _)| s.store.geodes)
+        .unwrap();
+    // Return
+    return res;
+}
+
+#[cfg(not(debug_assertions))]
+fn explore2(step: usize, state: State, bp: &Blueprint) -> (State, usize) {
+    if step == 0 {
+        return (state, 0);
+    }
+    // Try all choices
+    let res = state
+        .choices_heuristics(bp)
+        .into_iter()
+        .map(|(s, _)| explore2(step - 1, s, bp))
         .max_by_key(|(s, _)| s.store.geodes)
         .unwrap();
     // Return
@@ -237,8 +185,6 @@ fn get_geodes2(bp: &Blueprint, steps: usize) -> i64 {
             geodes: 0,
         },
     };
-    // Makes some assumption on the blueprint
-    // assert_eq!(bp.ore, bp.clay);
     let s = explore2(steps, initial_state, bp);
     println!("{s:?}");
     return s.0.store.geodes;
@@ -253,7 +199,7 @@ fn main() {
         .collect();
 
     // Part 1
-    let results1: Vec<i64> = blueprints.iter().map(|bp| get_geodes(bp, 24)).collect();
+    let results1: Vec<i64> = blueprints.iter().map(|bp| get_geodes2(bp, 24)).collect();
     println!(
         "{:?}",
         results1
