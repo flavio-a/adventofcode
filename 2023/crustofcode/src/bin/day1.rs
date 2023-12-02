@@ -18,7 +18,7 @@ fn fl_digits(s: &String) -> u32 {
 
 fn get_first_digit(s: &String, dir: bool) -> u32 {
     let mut i = if dir { 0 } else { s.len() - 1 };
-    while if dir { i < s.len() } else { i >= 0 } {
+    while if dir { i < s.len() } else { i > 0 } {
         let si: char = s.chars().nth(i).unwrap();
         if si.is_digit(10) {
             return si.to_digit(10).unwrap();
