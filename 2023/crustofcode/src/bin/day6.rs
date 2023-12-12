@@ -71,5 +71,5 @@ fn main() {
 
     let (l2, u2) = get_min_max_win(race2);
 
-    println!("{}", u2 +1 - l2);
+    println!("{}", u2 + 1 - l2);
 }
