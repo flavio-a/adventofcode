@@ -4,6 +4,14 @@ use std::fs;
 pub type Point = (i64, i64);
 pub type UPoint = (usize, usize);
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Dir {
+    L,
+    R,
+    U,
+    D,
+}
+
 pub fn read_input() -> String {
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 2 {
@@ -99,6 +107,19 @@ pub fn visualize_grid(points: &Vec<Vec<bool>>) {
                 print!(" ");
                 // print!(".");
             }
+        }
+        println!("");
+    }
+}
+
+/// Visualize a grid of values given a function to display them
+pub fn visualize_grid_t<T, F>(points: &Vec<Vec<T>>, f: F)
+where
+    F: Fn(&T) -> char,
+{
+    for line in points.iter() {
+        for dot in line.iter() {
+            print!("{}", f(&dot));
         }
         println!("");
     }
