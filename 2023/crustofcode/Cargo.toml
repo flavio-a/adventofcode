@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 itertools = "^0.10.0"
 slab_tree = "0.3.2"
-pathfinding = "2.2.3"
+pathfinding = "4.6.0"
 either = "1.8.0"
 aoc-parse = "0.2.17"
 num = "0.4.1"

@@ -1,17 +1,7 @@
 use itertools::Itertools;
 use std::fs;
 
-pub type Point = (i64, i64);
-pub type UPoint = (usize, usize);
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Dir {
-    L,
-    R,
-    U,
-    D,
-}
-
+// -------------------------------- Read input --------------------------------
 pub fn read_input() -> String {
     let args: Vec<String> = std::env::args().collect();
     if args.len() < 2 {
@@ -54,6 +44,20 @@ pub fn read_input_lines() -> Vec<String> {
 /// ```
 pub fn lines_to_ints(content: String) -> Vec<i64> {
     content.lines().map(str2int).collect()
+}
+
+pub fn drop_prefix<'a>(s: &'a str, prefix: &str) -> &'a str {
+    let l = prefix.chars().count();
+    assert_eq!(&s[0..l], prefix.to_string());
+    return &s[l..];
+}
+
+// ----------------------------- Points and grids -----------------------------
+pub type Point = (i64, i64);
+pub type UPoint = (usize, usize);
+
+pub fn up2p((x, y): UPoint) -> Point {
+    (x.try_into().unwrap(), y.try_into().unwrap())
 }
 
 /// Visualize a vector of points in the 2D space, representing points as the
@@ -125,12 +129,7 @@ where
     }
 }
 
-pub fn drop_prefix<'a>(s: &'a str, prefix: &str) -> &'a str {
-    let l = prefix.chars().count();
-    assert_eq!(&s[0..l], prefix.to_string());
-    return &s[l..];
-}
-
+// ------------------------------- Projections --------------------------------
 pub fn fst<T, U>(&(x, _): &(T, U)) -> T
 where
     T: Copy,
@@ -157,6 +156,37 @@ pub fn point_transpose<T>((x, y): (T, T)) -> (T, T) {
     (y, x)
 }
 
-pub fn up2p((x, y): UPoint) -> Point {
-    (x.try_into().unwrap(), y.try_into().unwrap())
+// -------------------------------- Directions --------------------------------
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum Dir {
+    L,
+    R,
+    U,
+    D,
+}
+
+impl Dir {
+    pub fn opposite(&self) -> Dir {
+        match self {
+            Dir::D => Dir::U,
+            Dir::L => Dir::R,
+            Dir::R => Dir::L,
+            Dir::U => Dir::D,
+        }
+    }
+
+    // Add a dir to a Point, staying inside the bounds
+    pub fn move_point(&self, (i, j): UPoint, h: usize, w: usize) -> Option<UPoint> {
+        match self {
+            Dir::R => (j + 1 < w).then(|| (i, j + 1)),
+            Dir::L => (j > 0).then(|| (i, j - 1)),
+            Dir::U => (i > 0).then(|| (i - 1, j)),
+            Dir::D => (i + 1 < h).then(|| (i + 1, j)),
+        }
+    }
+}
+
+// ----------------------------------- Misc -----------------------------------
+pub fn option_assert(g: bool) -> Option<()> {
+    g.then_some(())
 }
