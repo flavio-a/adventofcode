@@ -108,8 +108,8 @@ pub fn visualize_grid(points: &Vec<Vec<bool>>) {
                 // print!("█");
                 print!("#");
             } else {
-                print!(" ");
-                // print!(".");
+                // print!(" ");
+                print!(".");
             }
         }
         println!("");
@@ -157,7 +157,7 @@ pub fn point_transpose<T>((x, y): (T, T)) -> (T, T) {
 }
 
 // -------------------------------- Directions --------------------------------
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Dir {
     L,
     R,
@@ -165,7 +165,10 @@ pub enum Dir {
     D,
 }
 
+pub static ALL_DIRS: [Dir; 4] = [Dir::U, Dir::D, Dir::L, Dir::R];
+
 impl Dir {
+
     pub fn opposite(&self) -> Dir {
         match self {
             Dir::D => Dir::U,
