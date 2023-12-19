@@ -168,7 +168,6 @@ pub enum Dir {
 pub static ALL_DIRS: [Dir; 4] = [Dir::U, Dir::D, Dir::L, Dir::R];
 
 impl Dir {
-
     pub fn opposite(&self) -> Dir {
         match self {
             Dir::D => Dir::U,
