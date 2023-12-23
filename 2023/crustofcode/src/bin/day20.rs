@@ -159,7 +159,7 @@ fn push_button1(modules: &mut Vec<Module>, broadcaster_idx: usize) -> (usize, us
     return res;
 }
 
-fn push_button2(modules: &mut Vec<Module>, broadcaster_idx: usize, rx_idx: usize) -> bool {
+fn push_button2(modules: &mut Vec<Module>, broadcaster_idx: usize, rx_idx: usize, t: usize) -> bool {
     let mut signals: VecDeque<Signal> = VecDeque::from([(0, Pulse::L, broadcaster_idx)]);
     while !signals.is_empty() {
         let (sender, p, receiver) = signals.pop_front().unwrap();
@@ -168,6 +168,11 @@ fn push_button2(modules: &mut Vec<Module>, broadcaster_idx: usize, rx_idx: usize
         }
         if receiver < modules.len() {
             let mut new_signals = modules[receiver].handle_pulse(sender, p);
+            for (sender, p, _) in &new_signals {
+                if [2, 11, 43, 53].contains(sender) && p.is_low() {
+                    println!("{sender} - {t}: {p:?}");
+                }
+            }
             signals.append(&mut new_signals);
         }
     }
@@ -228,7 +233,7 @@ fn main() {
     let mut modules_p2 = modules.clone();
     let rx_idx = get_name(String::from("rx"));
     let mut r2: usize = 1;
-    while !push_button2(&mut modules_p2, broadcaster_idx, rx_idx) {
+    while !push_button2(&mut modules_p2, broadcaster_idx, rx_idx, r2) {
         r2 += 1;
     }
     println!("{r2}");
