@@ -1,0 +1,12 @@
+[package]
+name = "crustofcode"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+itertools = "^0.10.0"
+pathfinding = "4.6.0"
+aoc-parse = "0.2.17"
+num = "0.4.1"
+memoize = "0.4.1"
+rand = "^0.8"
