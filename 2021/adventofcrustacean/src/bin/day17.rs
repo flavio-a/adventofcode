@@ -4,7 +4,13 @@ type Pos = (i64, i64);
 
 fn main() {
     let content = adventofcrustacean::read_input();
-    let cusu = content.lines().next().unwrap().split(",").map(adventofcrustacean::str2int).collect::<Vec<i64>>();
+    let cusu = content
+        .lines()
+        .next()
+        .unwrap()
+        .split(",")
+        .map(adventofcrustacean::str2int)
+        .collect::<Vec<i64>>();
     let smol = (cusu[0], cusu[2]);
     let beeg = (cusu[1], cusu[3]);
     // println!("{:?} {:?}", smol, beeg);

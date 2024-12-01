@@ -1,6 +1,6 @@
 use adventofcrustacean;
 
-#[derive(Debug,Eq,PartialEq,Clone,Copy)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy)]
 enum SeaCucumber {
     Left,
     Down,
@@ -18,7 +18,6 @@ fn parse_cell(c: char) -> SeaCucumber {
     }
 }
 
-
 #[inline(always)]
 fn is_empty(c: &SeaCucumber) -> bool {
     *c == SeaCucumber::None
@@ -34,12 +33,10 @@ fn step(grid: &Grid) -> Grid {
                 let j1 = (j + 1) % width;
                 if is_empty(&grid[i][j1]) {
                     tmp[i][j1] = *c;
-                }
-                else {
+                } else {
                     tmp[i][j] = *c;
                 }
-            }
-            else if *c == SeaCucumber::Down {
+            } else if *c == SeaCucumber::Down {
                 tmp[i][j] = *c;
             }
         }
@@ -51,12 +48,10 @@ fn step(grid: &Grid) -> Grid {
                 let i1 = (i + 1) % height;
                 if is_empty(&tmp[i1][j]) {
                     res[i1][j] = *c;
-                }
-                else {
+                } else {
                     res[i][j] = *c;
                 }
-            }
-            else if *c == SeaCucumber::Left {
+            } else if *c == SeaCucumber::Left {
                 res[i][j] = *c;
             }
         }
@@ -81,7 +76,10 @@ fn print_grid(grid: &Grid) {
 
 fn main() {
     let content = adventofcrustacean::read_input();
-    let grid: Grid = content.lines().map(|s| s.chars().map(parse_cell).collect()).collect();
+    let grid: Grid = content
+        .lines()
+        .map(|s| s.chars().map(parse_cell).collect())
+        .collect();
 
     // Part 1
     // Iterate until fixpoint

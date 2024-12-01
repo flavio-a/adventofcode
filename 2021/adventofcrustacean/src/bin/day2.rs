@@ -1,7 +1,5 @@
 use adventofcrustacean;
 
-
-
 fn main() {
     let content = adventofcrustacean::read_input();
     // let vals = adventofcrustacean::lines(content);
@@ -28,7 +26,7 @@ fn main() {
                 let x = adventofcrustacean::str2int(&cusi[1]);
                 pos += x;
                 depth += aim * x;
-            },
+            }
             "up" => aim -= adventofcrustacean::str2int(&cusi[1]),
             "down" => aim += adventofcrustacean::str2int(&cusi[1]),
             _ => println!("Unexpected value!"),

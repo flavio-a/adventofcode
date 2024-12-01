@@ -7,7 +7,11 @@ fn most_common(lines: &Vec<&str>, idx: usize) -> u8 {
             zeros += 1;
         }
     }
-    if zeros > u32::try_from(lines.len()).ok().unwrap() - zeros { 0 } else { 1 }
+    if zeros > u32::try_from(lines.len()).ok().unwrap() - zeros {
+        0
+    } else {
+        1
+    }
 }
 
 fn check_nth(val: &str, idx: usize, c: u8) -> bool {
@@ -55,10 +59,16 @@ fn main() {
         let oxy_bit = most_common(&oxy, i);
         let co2_bit = most_common(&co2, i);
         if oxy.len() > 1 {
-            oxy = oxy.into_iter().filter(|s| check_nth(s, i, oxy_bit)).collect::<Vec<&str>>();
+            oxy = oxy
+                .into_iter()
+                .filter(|s| check_nth(s, i, oxy_bit))
+                .collect::<Vec<&str>>();
         }
         if co2.len() > 1 {
-            co2 = co2.into_iter().filter(|s| !check_nth(s, i, co2_bit)).collect::<Vec<&str>>();
+            co2 = co2
+                .into_iter()
+                .filter(|s| !check_nth(s, i, co2_bit))
+                .collect::<Vec<&str>>();
         }
     }
     let oxy = bin2int(oxy[0]);

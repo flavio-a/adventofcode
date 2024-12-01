@@ -1,8 +1,8 @@
 extern crate pathfinding;
 
 use adventofcrustacean;
-use pathfinding::dijkstra;
 use pathfinding::astar;
+use pathfinding::dijkstra;
 
 // Commented measurement code
 // I wanted to make sure that get_weight didn't take up too much time (since
@@ -15,7 +15,10 @@ type Row = Vec<u8>;
 type Board = Vec<Row>;
 
 fn char2int(c: char) -> u8 {
-    c.to_digit(10).expect("Char parsable to number expected").try_into().unwrap()
+    c.to_digit(10)
+        .expect("Char parsable to number expected")
+        .try_into()
+        .unwrap()
 }
 
 fn neighs1(board: &Board, x: usize, y: usize) -> Vec<((usize, usize), u32)> {
@@ -73,26 +76,31 @@ fn neighs2(board: &Board, x: usize, y: usize) -> Vec<((usize, usize), u32)> {
 
 fn main() {
     let content = adventofcrustacean::read_input();
-    let board = content.lines().map(|s| s.chars().map(char2int).collect::<Row>()).collect::<Board>();
+    let board = content
+        .lines()
+        .map(|s| s.chars().map(char2int).collect::<Row>())
+        .collect::<Board>();
 
     // Part 1
     let maxx = board.len() - 1;
     let maxy = board[0].len() - 1;
-    let path1 = dijkstra(&(0, 0),
-                         |&(x, y)| neighs1(&board, x, y),
-                         |&(x, y)| x == maxx && y == maxy
-                );
+    let path1 = dijkstra(
+        &(0, 0),
+        |&(x, y)| neighs1(&board, x, y),
+        |&(x, y)| x == maxx && y == maxy,
+    );
     println!("{}", path1.unwrap().1);
 
     // Part 2
     let maxx = board.len() * 5 - 1;
     let maxy = board[0].len() * 5 - 1;
-    let path2 = astar(&(0, 0),
-                      |&(x, y)| neighs2(&board, x, y),
-                      // Manhattan distance as heuristic
-                      |&(x, y)| ((maxx - x) + (maxy - y)).try_into().unwrap(),
-                      |&(x, y)| x == maxx && y == maxy
-                );
+    let path2 = astar(
+        &(0, 0),
+        |&(x, y)| neighs2(&board, x, y),
+        // Manhattan distance as heuristic
+        |&(x, y)| ((maxx - x) + (maxy - y)).try_into().unwrap(),
+        |&(x, y)| x == maxx && y == maxy,
+    );
     println!("{}", path2.unwrap().1);
     // unsafe{
     // println!("usec: {}", usec);

@@ -15,7 +15,7 @@ fn parse_line(line: &str) -> Line {
 }
 
 fn is_ortho(line: &Line) -> bool {
-    line.0.0 == line.1.0 || line.0.1 == line.1.1
+    line.0 .0 == line.1 .0 || line.0 .1 == line.1 .1
 }
 
 fn sum_points(p1: &Point, p2: &Point) -> Point {
@@ -25,8 +25,24 @@ fn sum_points(p1: &Point, p2: &Point) -> Point {
 fn points_of(line: &Line) -> Vec<Point> {
     let mut points = vec![line.0];
     let dir = (
-        if line.0.0 == line.1.0 { 0 } else { if line.0.0 > line.1.0 { -1 } else { 1 } },
-        if line.0.1 == line.1.1 { 0 } else { if line.0.1 > line.1.1 { -1 } else { 1 } }
+        if line.0 .0 == line.1 .0 {
+            0
+        } else {
+            if line.0 .0 > line.1 .0 {
+                -1
+            } else {
+                1
+            }
+        },
+        if line.0 .1 == line.1 .1 {
+            0
+        } else {
+            if line.0 .1 > line.1 .1 {
+                -1
+            } else {
+                1
+            }
+        },
     );
     let mut last_pt = line.0;
     while last_pt != line.1 {

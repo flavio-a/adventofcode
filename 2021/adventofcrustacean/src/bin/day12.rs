@@ -29,17 +29,21 @@ fn count_paths(graph: &Graph, node: &str, visited: &mut Visited, jolly: bool) ->
     if !is_big(node) {
         *visited.get_mut(node).unwrap() += 1;
     }
-    let res = graph.get(node).unwrap().iter().map(|n|
-        if *visited.get(n).unwrap() == 0 {
-            count_paths(graph, n, visited, jolly)
-        }
-        else if !jolly && *n != "start" { // n is visited, but I still have the jolly
-            count_paths(graph, n, visited, true)
-        }
-        else {
-            0
-        }
-    ).sum();
+    let res = graph
+        .get(node)
+        .unwrap()
+        .iter()
+        .map(|n| {
+            if *visited.get(n).unwrap() == 0 {
+                count_paths(graph, n, visited, jolly)
+            } else if !jolly && *n != "start" {
+                // n is visited, but I still have the jolly
+                count_paths(graph, n, visited, true)
+            } else {
+                0
+            }
+        })
+        .sum();
     if !is_big(node) {
         *visited.get_mut(node).unwrap() -= 1;
     }
@@ -50,7 +54,7 @@ fn main() {
     let content = adventofcrustacean::read_input();
     let edges = content.lines().map(parse_edge);
     // Build the graph
-    let mut graph: Graph<> = HashMap::new();
+    let mut graph: Graph = HashMap::new();
     for (v1, v2) in edges {
         add_edge(&mut graph, v1, v2);
         add_edge(&mut graph, v2, v1);
@@ -59,7 +63,7 @@ fn main() {
     let graph = graph;
 
     // Part 1
-    let mut visited: Visited<> = HashMap::new();
+    let mut visited: Visited = HashMap::new();
     for &node in graph.keys() {
         visited.insert(node, 0);
     }

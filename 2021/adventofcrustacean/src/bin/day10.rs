@@ -48,29 +48,30 @@ fn corrupted_or_repair(line: &str) -> (bool, u64) {
     for c in line.chars() {
         if OPEN.contains(&c) {
             stack.push(c);
-        }
-        else if c == closing(stack.last().unwrap()) {
+        } else if c == closing(stack.last().unwrap()) {
             stack.pop();
-        }
-        else {
+        } else {
             return (true, cost(c));
         }
     }
     return (false, score(stack));
 }
 
-
-
 fn main() {
     let content = adventofcrustacean::read_input();
     let lines = content.lines().map(corrupted_or_repair);
-    let (corrupted, incomplete): (Vec<(bool, u64)>, Vec<(bool, u64)>) = lines.partition(|(b, _)| *b);
+    let (corrupted, incomplete): (Vec<(bool, u64)>, Vec<(bool, u64)>) =
+        lines.partition(|(b, _)| *b);
 
     // Part 1
     let r1: u64 = corrupted.into_iter().map(|(_, v)| v).sum();
     println!("{}", r1);
 
     // Part 2
-    let tmp = incomplete.into_iter().map(|(_, v)| v).sorted().collect::<Vec<u64>>();
+    let tmp = incomplete
+        .into_iter()
+        .map(|(_, v)| v)
+        .sorted()
+        .collect::<Vec<u64>>();
     println!("{}", tmp[tmp.len() / 2]);
 }

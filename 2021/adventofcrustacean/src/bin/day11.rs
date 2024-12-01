@@ -6,7 +6,10 @@ type Row = Vec<u8>;
 type Board = Vec<Row>;
 
 fn char2int(c: char) -> u8 {
-    c.to_digit(10).expect("Char parsable to number expected").try_into().unwrap()
+    c.to_digit(10)
+        .expect("Char parsable to number expected")
+        .try_into()
+        .unwrap()
 }
 
 fn incr_neighs(board: &mut Board, x: usize, y: usize) {
@@ -31,14 +34,31 @@ fn incr_neighs(board: &mut Board, x: usize, y: usize) {
 
 // Returns a pair (new_board, number of flashes)
 fn step(board: Board) -> (Board, u32) {
-    let mut incr_board = board.into_iter().map(|r| r.into_iter().map(|v| v + 1).collect::<Row>()).collect::<Board>();
+    let mut incr_board = board
+        .into_iter()
+        .map(|r| r.into_iter().map(|v| v + 1).collect::<Row>())
+        .collect::<Board>();
     for x in 0..SIZE {
         for y in 0..SIZE {
             incr_neighs(&mut incr_board, x, y);
         }
     }
     let mut flashes: u32 = 0;
-    let new_board = incr_board.iter().map(|r| r.iter().map(|&v| if v > 9 { flashes += 1; 0 } else { v }).collect::<Row>()).collect::<Board>();
+    let new_board = incr_board
+        .iter()
+        .map(|r| {
+            r.iter()
+                .map(|&v| {
+                    if v > 9 {
+                        flashes += 1;
+                        0
+                    } else {
+                        v
+                    }
+                })
+                .collect::<Row>()
+        })
+        .collect::<Board>();
     return (new_board, flashes);
 }
 
@@ -58,7 +78,10 @@ fn all_together(b: &Board) -> bool {
 
 fn main() {
     let content = adventofcrustacean::read_input();
-    let init_board = content.lines().map(|s| s.chars().map(char2int).collect::<Row>()).collect::<Board>();
+    let init_board = content
+        .lines()
+        .map(|s| s.chars().map(char2int).collect::<Row>())
+        .collect::<Board>();
 
     // Part 1
     let mut tot_flashes = 0;

@@ -1,12 +1,18 @@
 use adventofcrustacean;
 
 fn quad_dist(poss: &Vec<i64>, x: i64) -> i64 {
-    poss.into_iter().map(|v| (x - v).abs() * ((x - v).abs() + 1) / 2).sum()
+    poss.into_iter()
+        .map(|v| (x - v).abs() * ((x - v).abs() + 1) / 2)
+        .sum()
 }
 
 fn main() {
     let content = adventofcrustacean::read_input();
-    let mut crabs = content.trim().split(",").map(adventofcrustacean::str2int).collect::<Vec<i64>>();
+    let mut crabs = content
+        .trim()
+        .split(",")
+        .map(adventofcrustacean::str2int)
+        .collect::<Vec<i64>>();
 
     // Part 1
     crabs.sort_unstable();

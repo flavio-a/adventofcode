@@ -8,7 +8,11 @@ where
     I: Iterator<Item = &'a str>,
 {
     let mut newboard: Board = [(0, false); 25];
-    for (x, line) in lines.map(|s| s.trim()).filter(|s| !s.is_empty()).enumerate() {
+    for (x, line) in lines
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty())
+        .enumerate()
+    {
         for (y, val) in line.split_whitespace().enumerate() {
             newboard[x * 5 + y] = (adventofcrustacean::str2int(val), false);
         }
@@ -57,8 +61,7 @@ fn check_board(board: &Board) -> i64 {
 
     if !found {
         0
-    }
-    else {
+    } else {
         let mut a = 0;
         for &(val, found1) in board.iter() {
             a += if found1 { 0 } else { val }
@@ -71,7 +74,12 @@ fn main() {
     let content = adventofcrustacean::read_input();
     let mut lines = content.lines();
 
-    let draws: Vec<i64> = lines.next().unwrap().split(",").map(adventofcrustacean::str2int).collect();
+    let draws: Vec<i64> = lines
+        .next()
+        .unwrap()
+        .split(",")
+        .map(adventofcrustacean::str2int)
+        .collect();
     // println!("{:?}", draws);
 
     // This is an iterator at any time
@@ -91,7 +99,8 @@ fn main() {
 
     // Part 2
     // Goes on from the boards already updated
-    for &drawn in draws.iter() { // I should do better than restart, but anyway
+    for &drawn in draws.iter() {
+        // I should do better than restart, but anyway
         // Check for last one before because otherwise it gets filtered out
         if boards.len() == 1 {
             let cusu = check_board(&update_board(boards[0], drawn));
@@ -99,8 +108,10 @@ fn main() {
                 println!("{}", cusu * drawn);
             }
         }
-        boards = boards.iter().map(|&b| update_board(b, drawn)) // Update the board
-                              .filter(|b| check_board(b) == 0) // Filter out winning boards
-                              .collect();
+        boards = boards
+            .iter()
+            .map(|&b| update_board(b, drawn)) // Update the board
+            .filter(|b| check_board(b) == 0) // Filter out winning boards
+            .collect();
     }
 }

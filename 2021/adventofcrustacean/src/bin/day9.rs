@@ -55,16 +55,25 @@ fn main() {
     let content = adventofcrustacean::read_input();
     let lines = content.lines().collect::<Vec<&str>>();
     let x = lines[0].len();
-    let heights = lines.into_iter().map(|s| s.chars().map(char2int)).flatten().collect::<Vec<u32>>();
+    let heights = lines
+        .into_iter()
+        .map(|s| s.chars().map(char2int))
+        .flatten()
+        .collect::<Vec<u32>>();
 
     // Part 1
-    let low_points = (0..heights.len()).filter(|&v| is_low(&heights, x, v)).collect::<Vec<usize>>();
+    let low_points = (0..heights.len())
+        .filter(|&v| is_low(&heights, x, v))
+        .collect::<Vec<usize>>();
     let r1: u32 = low_points.iter().map(|&v| heights[v] + 1).sum();
     println!("{}", r1);
 
     // Part 2
     let mut visited = vec![false; heights.len()];
-    let tmp = low_points.iter().map(|&v| basin_size(&heights, x, v, &mut visited)).collect::<Vec<u32>>();
+    let tmp = low_points
+        .iter()
+        .map(|&v| basin_size(&heights, x, v, &mut visited))
+        .collect::<Vec<u32>>();
     let r2: u32 = tmp.into_iter().sorted().rev().take(3).product();
     println!("{}", r2);
 }

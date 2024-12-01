@@ -2,16 +2,16 @@ use adventofcrustacean;
 use itertools::Itertools;
 
 const COMPS: [&str; 10] = [
-    "abcefg",   // 0
-    "cf",       // 1
-    "acdeg",    // 2
-    "acdfg",    // 3
-    "bcdf",     // 4
-    "abdfg",    // 5
-    "abdefg",   // 6
-    "acf",      // 7
-    "abcdefg",  // 8
-    "abcdfg",   // 9
+    "abcefg",  // 0
+    "cf",      // 1
+    "acdeg",   // 2
+    "acdfg",   // 3
+    "bcdf",    // 4
+    "abdfg",   // 5
+    "abdefg",  // 6
+    "acf",     // 7
+    "abcdefg", // 8
+    "abcdfg",  // 9
 ];
 
 fn char2idx(c: char) -> usize {
@@ -23,10 +23,11 @@ fn isinstr(c: char, s: &str) -> bool {
 }
 
 fn translate_str(s: &str, transl_vec: &Vec<char>) -> usize {
-    let tmp = s.chars()
-               .map(|c| transl_vec[char2idx(c)])
-               .sorted()
-               .collect::<String>();
+    let tmp = s
+        .chars()
+        .map(|c| transl_vec[char2idx(c)])
+        .sorted()
+        .collect::<String>();
     let idx = COMPS.iter().position(|&r| r == tmp).unwrap();
     return idx;
 }
@@ -34,7 +35,11 @@ fn translate_str(s: &str, transl_vec: &Vec<char>) -> usize {
 // Takes a line and returns the four output digits
 fn solve_line(line: &str) -> Vec<usize> {
     let tmp = line.split("|").collect::<Vec<&str>>();
-    let patterns = tmp[0].trim().split(" ").sorted_by_key(|&s| s.len()).collect::<Vec<&str>>();
+    let patterns = tmp[0]
+        .trim()
+        .split(" ")
+        .sorted_by_key(|&s| s.len())
+        .collect::<Vec<&str>>();
     let output_digits = tmp[1].trim().split(" ").collect::<Vec<&str>>();
 
     // println!("{:?}", patterns);
@@ -45,8 +50,7 @@ fn solve_line(line: &str) -> Vec<usize> {
         // c appears in 8 numbers, f appears in 9
         if patterns.iter().filter(|&s| isinstr(c, s)).count() == 8 {
             cusu[char2idx(c)] = 'c';
-        }
-        else {
+        } else {
             cusu[char2idx(c)] = 'f';
         }
     }
@@ -62,8 +66,7 @@ fn solve_line(line: &str) -> Vec<usize> {
             // b appears in 6 numbers, d appears in 7
             if patterns.iter().filter(|&s| isinstr(c, s)).count() == 6 {
                 cusu[char2idx(c)] = 'b';
-            }
-            else {
+            } else {
                 cusu[char2idx(c)] = 'd';
             }
         }
@@ -73,8 +76,7 @@ fn solve_line(line: &str) -> Vec<usize> {
         if cusu[char2idx(c)] == '0' {
             if patterns.iter().filter(|&s| isinstr(c, s)).count() == 4 {
                 cusu[char2idx(c)] = 'e';
-            }
-            else {
+            } else {
                 cusu[char2idx(c)] = 'g';
             }
         }
@@ -82,7 +84,10 @@ fn solve_line(line: &str) -> Vec<usize> {
     // println!("{:?}", cusu);
 
     // Translation
-    output_digits.iter().map(|&s| translate_str(s, &cusu)).collect::<Vec<usize>>()
+    output_digits
+        .iter()
+        .map(|&s| translate_str(s, &cusu))
+        .collect::<Vec<usize>>()
 }
 
 fn is_unique_len(v: usize) -> bool {
@@ -102,7 +107,11 @@ fn main() {
     let outputs = content.lines().map(solve_line).collect::<Vec<Vec<usize>>>();
 
     // Part 1
-    let a = outputs.iter().flatten().filter(|&v| is_unique_len(*v)).count();
+    let a = outputs
+        .iter()
+        .flatten()
+        .filter(|&v| is_unique_len(*v))
+        .count();
     println!("{}", a);
 
     // Part 2

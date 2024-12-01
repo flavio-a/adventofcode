@@ -30,8 +30,7 @@ fn main() {
     let finc2 = vals.iter().zip((&vals[3..]).iter()).filter(pair_lt).count();
     if inc1 == finc1 && inc2 == finc2 {
         println!("Functional-style results are the same as imperative ones");
-    }
-    else {
+    } else {
         println!("Mismatch: {} - {}", finc1, finc2);
     }
 }

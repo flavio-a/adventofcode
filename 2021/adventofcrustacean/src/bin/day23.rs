@@ -23,8 +23,7 @@ fn energy_factor(c: &char) -> Energy {
 fn get_cell(hall: &Hall, rows: &Vec<Row>, pos: Pos) -> char {
     if pos.0 == 0 {
         hall[pos.1]
-    }
-    else {
+    } else {
         rows[pos.0 - 1][pos.1]
     }
 }
@@ -34,7 +33,7 @@ fn move_amph(hall: &Hall, rows: &Vec<Row>, start: Pos, end: Pos) -> Option<Energ
     // If the end position is in the hall above one of the rooms returns None
     // (because an amph can't stop there)
     if end.0 == 0 && (end.1 == 2 || end.1 == 4 || end.1 == 6 || end.1 == 8) {
-        return None
+        return None;
     }
     // To move from start to end, the amphipod has to move up, then left/right
     // and then down (any of this step is possibly missing)
@@ -50,13 +49,24 @@ fn move_amph(hall: &Hall, rows: &Vec<Row>, start: Pos, end: Pos) -> Option<Energ
         steps += 1;
     }
     // Moving horizontally
-    let mut hallstartcol = if start.0 == 0 { start.1 } else { 2 + start.1 * 2 };
+    let mut hallstartcol = if start.0 == 0 {
+        start.1
+    } else {
+        2 + start.1 * 2
+    };
     let mut hallendcol = if end.0 == 0 { end.1 } else { 2 + end.1 * 2 };
     if hallstartcol <= hallendcol {
-        hallstartcol = if start.0 == 0 { hallstartcol + 1 } else { hallstartcol };
-    }
-    else {
-        let tmp = if start.0 == 0 { hallstartcol - 1 } else { hallstartcol };
+        hallstartcol = if start.0 == 0 {
+            hallstartcol + 1
+        } else {
+            hallstartcol
+        };
+    } else {
+        let tmp = if start.0 == 0 {
+            hallstartcol - 1
+        } else {
+            hallstartcol
+        };
         hallstartcol = hallendcol;
         hallendcol = tmp;
     }
@@ -82,11 +92,15 @@ fn move_amph(hall: &Hall, rows: &Vec<Row>, start: Pos, end: Pos) -> Option<Energ
 fn print_conf(hall: &Hall, rows: &Vec<Row>) {
     println!("#############");
     print!("#");
-    for c in hall.iter() { print!("{}", c); }
+    for c in hall.iter() {
+        print!("{}", c);
+    }
     println!("#");
     for row in rows.iter() {
         print!("  #");
-        for c in row.iter() { print!("{}#", c); }
+        for c in row.iter() {
+            print!("{}#", c);
+        }
         println!("");
     }
 }
@@ -119,13 +133,16 @@ fn can_move_to_target(hall: &Hall, rows: &Vec<Row>, a: char) -> Option<Pos> {
     let mut bottom: Coord = rows.len();
     let col: Coord = amph_col(a);
     // Checks the bottom
-    while bottom > 0 && get_cell(hall, rows, (bottom, col)) == a { bottom -= 1 };
+    while bottom > 0 && get_cell(hall, rows, (bottom, col)) == a {
+        bottom -= 1
+    }
     let mut top = bottom;
-    while top > 0 && get_cell(hall, rows, (top, col)) == ' ' { top -= 1 };
+    while top > 0 && get_cell(hall, rows, (top, col)) == ' ' {
+        top -= 1
+    }
     if top > 0 {
         return None;
-    }
-    else {
+    } else {
         return Some((bottom, col));
     }
 }
@@ -134,7 +151,9 @@ fn can_move_to_target(hall: &Hall, rows: &Vec<Row>, a: char) -> Option<Pos> {
 fn bottom_col_ok(hall: &Hall, rows: &Vec<Row>, col: Coord) -> bool {
     let mut bottom: Coord = rows.len();
     let a: char = col_amph(col);
-    while bottom > 0 && get_cell(hall, rows, (bottom, col)) == a { bottom -= 1 };
+    while bottom > 0 && get_cell(hall, rows, (bottom, col)) == a {
+        bottom -= 1
+    }
     return bottom == 0 || get_cell(hall, rows, (bottom, col)) == ' ';
 }
 
@@ -178,9 +197,13 @@ fn move_out(hall: Hall, mut rows: Vec<Row>, pos: Pos) -> Vec<(Hall, Vec<Row>, En
 fn empty_col(hall: Hall, rows: Vec<Row>, col: Coord) -> Vec<(Hall, Vec<Row>, Energy)> {
     let mut bottom: Coord = rows.len();
     // Leaves any amphipod already in the righ column where it is
-    while bottom > 0 && get_cell(&hall, &rows, (bottom, col)) == col_amph(col) { bottom -= 1 };
+    while bottom > 0 && get_cell(&hall, &rows, (bottom, col)) == col_amph(col) {
+        bottom -= 1
+    }
     let mut top: Coord = 1;
-    while top <= bottom && get_cell(&hall, &rows, (top, col)) == ' ' { top += 1 };
+    while top <= bottom && get_cell(&hall, &rows, (top, col)) == ' ' {
+        top += 1
+    }
     if top > bottom {
         return vec![(hall, rows, 0)];
     }
@@ -225,7 +248,9 @@ fn move_one_from_col(hall: Hall, rows: Vec<Row>) -> Vec<(Hall, Vec<Row>, Energy)
         // Doesn't move guys out if they're already in the right column
         if !bottom_col_ok(&hall, &rows, col) {
             let mut top = 1;
-            while top <= rows.len() && get_cell(&hall, &rows, (top, col)) == ' ' { top += 1 };
+            while top <= rows.len() && get_cell(&hall, &rows, (top, col)) == ' ' {
+                top += 1
+            }
             if top <= rows.len() {
                 // Probably this could be optimized checking first if it can be moved to the target
                 res.extend(move_out(hall.clone(), rows.clone(), (top, col)));
@@ -275,8 +300,22 @@ fn main() {
     let mut lines = content.lines();
     assert_eq!(lines.next(), Some("#############"));
     assert_eq!(lines.next(), Some("#...........#"));
-    let row1: Row = lines.next().unwrap().chars().enumerate().filter(|&(i, _)| i == 3 || i == 5 || i == 7 || i == 9).map(|(_, c)| c).collect();
-    let row2: Row = lines.next().unwrap().chars().enumerate().filter(|&(i, _)| i == 3 || i == 5 || i == 7 || i == 9).map(|(_, c)| c).collect();
+    let row1: Row = lines
+        .next()
+        .unwrap()
+        .chars()
+        .enumerate()
+        .filter(|&(i, _)| i == 3 || i == 5 || i == 7 || i == 9)
+        .map(|(_, c)| c)
+        .collect();
+    let row2: Row = lines
+        .next()
+        .unwrap()
+        .chars()
+        .enumerate()
+        .filter(|&(i, _)| i == 3 || i == 5 || i == 7 || i == 9)
+        .map(|(_, c)| c)
+        .collect();
     assert_eq!(lines.next(), Some("  #########"));
     let empty_hall: Hall = [' '; HALL_LEN];
 
@@ -285,7 +324,13 @@ fn main() {
     // First, empties the column of the Ds
     // Actually this works for the p1 but is not the solution for the p2
     let mut tmp = empty_col(empty_hall.clone(), vec![row1.clone(), row2.clone()], 3);
-    tmp = tmp.into_iter().map(|(h, rs, en)| {let (h, rs, en1) = move_hallway_to_target(h, rs); (h, rs, en1 + en)}).collect();
+    tmp = tmp
+        .into_iter()
+        .map(|(h, rs, en)| {
+            let (h, rs, en1) = move_hallway_to_target(h, rs);
+            (h, rs, en1 + en)
+        })
+        .collect();
 
     // Now iterate the following procedure: tries to move to target all
     // elements in the hallway, then pick nondeterministically a column and
@@ -293,15 +338,17 @@ fn main() {
     while tmp.len() > 0 {
         let mut new_tmp = vec![];
         for (h, rs, en) in tmp.into_iter() {
-            new_tmp.extend(move_one_from_col(h, rs).into_iter().map(|(h, rs, en1)| { let (h, rs, en2) = move_hallway_to_target(h, rs); (h, rs, en2 + en1 + en) }));
+            new_tmp.extend(move_one_from_col(h, rs).into_iter().map(|(h, rs, en1)| {
+                let (h, rs, en2) = move_hallway_to_target(h, rs);
+                (h, rs, en2 + en1 + en)
+            }));
         }
         tmp = vec![];
         for conf in dedup_confs(new_tmp).into_iter() {
             // conf == (h, rs, en)
             if is_finished(&conf.0, &conf.1) {
                 println!("Part 1: {}", conf.2);
-            }
-            else {
+            } else {
                 tmp.push(conf);
             }
         }
@@ -316,15 +363,17 @@ fn main() {
     while tmp.len() > 0 {
         let mut new_tmp = vec![];
         for (h, rs, en) in tmp.into_iter() {
-            new_tmp.extend(move_one_from_col(h, rs).into_iter().map(|(h, rs, en1)| { let (h, rs, en2) = move_hallway_to_target(h, rs); (h, rs, en2 + en1 + en) }));
+            new_tmp.extend(move_one_from_col(h, rs).into_iter().map(|(h, rs, en1)| {
+                let (h, rs, en2) = move_hallway_to_target(h, rs);
+                (h, rs, en2 + en1 + en)
+            }));
         }
         tmp = vec![];
         for conf in dedup_confs(new_tmp).into_iter() {
             // conf == (h, rs, en)
             if is_finished(&conf.0, &conf.1) {
                 println!("Part 2: {}", conf.2);
-            }
-            else {
+            } else {
                 tmp.push(conf);
             }
         }

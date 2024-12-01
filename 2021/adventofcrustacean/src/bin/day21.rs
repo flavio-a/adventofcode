@@ -1,7 +1,7 @@
 use adventofcrustacean;
 use std::collections::HashMap;
 
-#[derive(Debug,Clone,Eq,Hash)]
+#[derive(Debug, Clone, Eq, Hash)]
 struct Config {
     score: [u16; 2],
     pos: [u16; 2],
@@ -68,7 +68,11 @@ fn main() {
     let start1: u16 = tmp.next().unwrap().try_into().unwrap();
     let start2: u16 = tmp.next().unwrap().try_into().unwrap();
     assert_eq!(tmp.next(), None);
-    let intial_conf: Config = Config { score: [0, 0], pos: [start1, start2], round: 0 };
+    let intial_conf: Config = Config {
+        score: [0, 0],
+        pos: [start1, start2],
+        round: 0,
+    };
 
     // Debug only
     #[cfg(debug_assertions)]
@@ -90,7 +94,14 @@ fn main() {
         rolls += 3;
         conf.round = 1 - conf.round;
     }
-    assert_eq!(conf.score[conf.round], if conf.score[0] == 1000 { conf.score[1] } else { conf.score[0] });
+    assert_eq!(
+        conf.score[conf.round],
+        if conf.score[0] == 1000 {
+            conf.score[1]
+        } else {
+            conf.score[0]
+        }
+    );
     println!("{}", u32::from(conf.score[conf.round]) * rolls);
 
     // Part 2
@@ -102,7 +113,14 @@ fn main() {
             for pos0 in 1..=10 {
                 for pos1 in 1..=10 {
                     for round in 0..=1 {
-                        dpget(&mut dparr, Config { score: [sc0, sc1], pos: [pos0, pos1], round: round });
+                        dpget(
+                            &mut dparr,
+                            Config {
+                                score: [sc0, sc1],
+                                pos: [pos0, pos1],
+                                round: round,
+                            },
+                        );
                     }
                 }
             }
@@ -116,14 +134,20 @@ fn main() {
     // multiplied by D3RES
     // Analogous for p1 (even though probably p0wins is always greater)
     for result in 3..=9 {
-        let tmp0: u64 = dparr.iter()
-            .filter(|&(conf, _)| conf.round == 0 && conf.score[0] + new_pos(conf.pos[0], result) > MAX_SCORE)
+        let tmp0: u64 = dparr
+            .iter()
+            .filter(|&(conf, _)| {
+                conf.round == 0 && conf.score[0] + new_pos(conf.pos[0], result) > MAX_SCORE
+            })
             .map(|(_, &v)| v)
             .sum();
         p0wins += tmp0 * D3RESS[usize::try_from(result).unwrap()];
 
-        let tmp1: u64 = dparr.iter()
-            .filter(|&(conf, _)| conf.round == 1 && conf.score[1] + new_pos(conf.pos[1], result) > MAX_SCORE)
+        let tmp1: u64 = dparr
+            .iter()
+            .filter(|&(conf, _)| {
+                conf.round == 1 && conf.score[1] + new_pos(conf.pos[1], result) > MAX_SCORE
+            })
             .map(|(_, &v)| v)
             .sum();
         p1wins += tmp1 * D3RESS[usize::try_from(result).unwrap()];

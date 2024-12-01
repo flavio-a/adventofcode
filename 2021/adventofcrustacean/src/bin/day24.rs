@@ -1,12 +1,12 @@
 use adventofcrustacean;
-use itertools::Itertools;
 use either::*;
+use itertools::Itertools;
 // use rand::Rng;
 
 type Var = char;
 type Operand = Either<Var, i64>;
 
-#[derive(Debug,Clone,Eq,PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 enum Op {
     Inp(Var),
     Add(Var, Operand),
@@ -18,9 +18,10 @@ enum Op {
 type Prog = Vec<Op>;
 type State = [i64; 4];
 
-
 fn char2int(c: char) -> i64 {
-    c.to_digit(10).expect("Char parsable to number expected").into()
+    c.to_digit(10)
+        .expect("Char parsable to number expected")
+        .into()
 }
 
 fn first_char(s: &str) -> char {
@@ -30,8 +31,7 @@ fn first_char(s: &str) -> char {
 fn parse_operand(s: &str) -> Operand {
     if first_char(s).is_alphabetic() {
         Left(first_char(s))
-    }
-    else {
+    } else {
         Right(adventofcrustacean::str2int(s))
     }
 }
@@ -75,19 +75,34 @@ fn run_prog(input: Vec<i64>, prog: &Prog) -> State {
             Op::Inp(v) => {
                 state[var2idx(v)] = input[input_idx];
                 input_idx += 1;
-            },
-            Op::Add(v, opd) => { state[var2idx(v)] += eval_operand(opd, &state); },
-            Op::Mul(v, opd) => { state[var2idx(v)] *= eval_operand(opd, &state); },
+            }
+            Op::Add(v, opd) => {
+                state[var2idx(v)] += eval_operand(opd, &state);
+            }
+            Op::Mul(v, opd) => {
+                state[var2idx(v)] *= eval_operand(opd, &state);
+            }
             Op::Div(v, opd) => {
                 if state[var2idx(v)] * eval_operand(opd, &state) < 0 {
-                    println!("Division: {} / {} = {}", state[var2idx(v)], eval_operand(opd, &state), state[var2idx(v)] / eval_operand(opd, &state));
+                    println!(
+                        "Division: {} / {} = {}",
+                        state[var2idx(v)],
+                        eval_operand(opd, &state),
+                        state[var2idx(v)] / eval_operand(opd, &state)
+                    );
                 }
                 state[var2idx(v)] /= eval_operand(opd, &state);
-            },
-            Op::Mod(v, opd) => { state[var2idx(v)] %= eval_operand(opd, &state); },
+            }
+            Op::Mod(v, opd) => {
+                state[var2idx(v)] %= eval_operand(opd, &state);
+            }
             Op::Eql(v, opd) => {
-                state[var2idx(v)] = if state[var2idx(v)] == eval_operand(opd, &state) { 1 } else { 0 };
-            },
+                state[var2idx(v)] = if state[var2idx(v)] == eval_operand(opd, &state) {
+                    1
+                } else {
+                    0
+                };
+            }
         }
     }
     // println!("Final state: {:?}", state);
@@ -112,7 +127,7 @@ fn main() {
             println!("{}", val);
         }
         if input.iter().any(|&c| c == 0) {
-            continue
+            continue;
         }
         if run_prog(input, &prog)[var2idx('z')] == 0 {
             println!("Part 1: {}", val);

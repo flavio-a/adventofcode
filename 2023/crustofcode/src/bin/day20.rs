@@ -159,7 +159,12 @@ fn push_button1(modules: &mut Vec<Module>, broadcaster_idx: usize) -> (usize, us
     return res;
 }
 
-fn push_button2(modules: &mut Vec<Module>, broadcaster_idx: usize, rx_idx: usize, t: usize) -> bool {
+fn push_button2(
+    modules: &mut Vec<Module>,
+    broadcaster_idx: usize,
+    rx_idx: usize,
+    t: usize,
+) -> bool {
     let mut signals: VecDeque<Signal> = VecDeque::from([(0, Pulse::L, broadcaster_idx)]);
     while !signals.is_empty() {
         let (sender, p, receiver) = signals.pop_front().unwrap();

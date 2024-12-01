@@ -61,7 +61,10 @@ pub fn up2p((x, y): UPoint) -> Point {
 }
 
 pub fn neighbours(p: UPoint, h: usize, w: usize) -> Vec<UPoint> {
-    ALL_DIRS.iter().filter_map(|d| d.move_point(p, h, w)).collect()
+    ALL_DIRS
+        .iter()
+        .filter_map(|d| d.move_point(p, h, w))
+        .collect()
 }
 
 /// Visualize a vector of points in the 2D space, representing points as the
