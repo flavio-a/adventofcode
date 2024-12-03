@@ -64,6 +64,7 @@ dependencies = [
  "num",
  "pathfinding",
  "rand",
+ "regex",
 ]
 
 [[package]]
