@@ -61,7 +61,7 @@ pub fn up2p((x, y): UPoint) -> Point {
 }
 
 pub fn neighbours(p: UPoint, h: usize, w: usize) -> Vec<UPoint> {
-    ALL_DIRS
+    Dir4::ALL_DIRS
         .iter()
         .filter_map(|d| d.move_point(p, h, w))
         .collect()
@@ -165,32 +165,84 @@ pub fn point_transpose<T>((x, y): (T, T)) -> (T, T) {
 
 // -------------------------------- Directions --------------------------------
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Dir {
+pub enum Dir4 {
     L,
     R,
     U,
     D,
 }
 
-pub static ALL_DIRS: [Dir; 4] = [Dir::U, Dir::D, Dir::L, Dir::R];
+impl Dir4 {
+    pub const ALL_DIRS: [Dir4; 4] = [Dir4::U, Dir4::D, Dir4::L, Dir4::R];
 
-impl Dir {
-    pub fn opposite(&self) -> Dir {
+    pub fn opposite(&self) -> Self {
         match self {
-            Dir::D => Dir::U,
-            Dir::L => Dir::R,
-            Dir::R => Dir::L,
-            Dir::U => Dir::D,
+            Dir4::D => Dir4::U,
+            Dir4::L => Dir4::R,
+            Dir4::R => Dir4::L,
+            Dir4::U => Dir4::D,
         }
     }
 
     // Add a dir to a Point, staying inside the bounds
     pub fn move_point(&self, (i, j): UPoint, h: usize, w: usize) -> Option<UPoint> {
         match self {
-            Dir::R => (j + 1 < w).then(|| (i, j + 1)),
-            Dir::L => (j > 0).then(|| (i, j - 1)),
-            Dir::U => (i > 0).then(|| (i - 1, j)),
-            Dir::D => (i + 1 < h).then(|| (i + 1, j)),
+            Dir4::R => (j + 1 < w).then(|| (i, j + 1)),
+            Dir4::L => (j > 0).then(|| (i, j - 1)),
+            Dir4::U => (i > 0).then(|| (i - 1, j)),
+            Dir4::D => (i + 1 < h).then(|| (i + 1, j)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Dir8 {
+    L,
+    R,
+    U,
+    D,
+    LU,
+    RU,
+    LD,
+    RD,
+}
+
+impl Dir8 {
+    pub const ALL_DIRS: [Dir8; 8] = [
+        Dir8::U,
+        Dir8::LU,
+        Dir8::L,
+        Dir8::LD,
+        Dir8::D,
+        Dir8::RD,
+        Dir8::R,
+        Dir8::RU,
+    ];
+
+    pub fn opposite(&self) -> Dir8 {
+        match self {
+            Dir8::D => Dir8::U,
+            Dir8::L => Dir8::R,
+            Dir8::R => Dir8::L,
+            Dir8::U => Dir8::D,
+            Dir8::LU => Dir8::RD,
+            Dir8::LD => Dir8::RU,
+            Dir8::RU => Dir8::LD,
+            Dir8::RD => Dir8::LU,
+        }
+    }
+
+    // Add a dir to a Point, staying inside the bounds
+    pub fn move_point(&self, (i, j): UPoint, h: usize, w: usize) -> Option<UPoint> {
+        match self {
+            Dir8::R => (j + 1 < w).then(|| (i, j + 1)),
+            Dir8::L => (j > 0).then(|| (i, j - 1)),
+            Dir8::U => (i > 0).then(|| (i - 1, j)),
+            Dir8::D => (i + 1 < h).then(|| (i + 1, j)),
+            Dir8::LU => (j > 0 && i > 0).then(|| (i - 1, j - 1)),
+            Dir8::RU => (j + 1 < w && i > 0).then(|| (i - 1, j + 1)),
+            Dir8::RD => (j + 1 < w && i + 1 < h).then(|| (i + 1, j + 1)),
+            Dir8::LD => (j > 0 && i + 1 < h).then(|| (i + 1, j - 1)),
         }
     }
 }
