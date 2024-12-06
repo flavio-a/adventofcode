@@ -35,7 +35,7 @@ pub fn read_input_lines() -> Vec<String> {
 ///
 /// # Example
 /// ```
-/// use adventofcrustacean::lines_to_ints;
+/// use crustofcode::lines_to_ints;
 ///
 /// let content = String::from("1\n2\n42");
 /// let nums = lines_to_ints(content);
@@ -136,6 +136,18 @@ where
     }
 }
 
+/// Count the number of true cells in a grid
+pub fn count_true(board: &Vec<Vec<bool>>) -> usize {
+    board
+        .iter()
+        .map(|r| {
+            r.into_iter()
+                .map(|c| if *c { 1_usize } else { 0_usize })
+                .sum::<usize>()
+        })
+        .sum()
+}
+
 // ------------------------------- Projections --------------------------------
 pub fn fst<T, U>(&(x, _): &(T, U)) -> T
 where
@@ -175,12 +187,41 @@ pub enum Dir4 {
 impl Dir4 {
     pub const ALL_DIRS: [Dir4; 4] = [Dir4::U, Dir4::D, Dir4::L, Dir4::R];
 
-    pub fn opposite(&self) -> Self {
+    /// Returns an unique index in the range 0..4 for the direction.
+    /// This is guaranteed to return the index in ALL_DIRS (ie. when d: Dir4,
+    /// Dir4::ALL_DIRS[d.to_index()] == d)
+    ///
+    /// ```
+    /// use crustofcode::Dir4;
+    ///
+    /// let d: Dir4 = Dir4::U;
+    ///
+    /// assert_eq!(d, Dir4::ALL_DIRS[d.to_index()]);
+    /// ```
+    pub const fn to_index(&self) -> usize {
+        match self {
+            Dir4::U => 0,
+            Dir4::D => 1,
+            Dir4::L => 2,
+            Dir4::R => 3,
+        }
+    }
+
+    pub const fn opposite(&self) -> Self {
         match self {
             Dir4::D => Dir4::U,
             Dir4::L => Dir4::R,
             Dir4::R => Dir4::L,
             Dir4::U => Dir4::D,
+        }
+    }
+
+    pub const fn turn_right(&self) -> Self {
+        match self {
+            Dir4::D => Dir4::L,
+            Dir4::L => Dir4::U,
+            Dir4::U => Dir4::R,
+            Dir4::R => Dir4::D,
         }
     }
 
@@ -219,7 +260,21 @@ impl Dir8 {
         Dir8::RU,
     ];
 
-    pub fn opposite(&self) -> Dir8 {
+    /// Returns an unique index in the range 0..8 for the direction
+    pub const fn to_index(&self) -> usize {
+        match self {
+            Dir8::U => 0,
+            Dir8::LU => 1,
+            Dir8::L => 2,
+            Dir8::LD => 3,
+            Dir8::D => 4,
+            Dir8::RD => 5,
+            Dir8::R => 6,
+            Dir8::RU => 7,
+        }
+    }
+
+    pub const fn opposite(&self) -> Dir8 {
         match self {
             Dir8::D => Dir8::U,
             Dir8::L => Dir8::R,
