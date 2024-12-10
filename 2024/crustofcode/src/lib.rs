@@ -60,11 +60,16 @@ pub fn up2p((x, y): UPoint) -> Point {
     (x.try_into().unwrap(), y.try_into().unwrap())
 }
 
-pub fn neighbours(p: UPoint, h: usize, w: usize) -> Vec<UPoint> {
+pub fn neighbours(p: &UPoint, h: usize, w: usize) -> Vec<UPoint> {
     Dir4::ALL_DIRS
         .iter()
-        .filter_map(|d| d.move_point(p, h, w))
+        .filter_map(|d| d.move_point(*p, h, w))
         .collect()
+}
+
+/// Returns the pair (w, h) needed for other grid operations
+pub fn get_dimensions<T>(grid: &Vec<Vec<T>>) -> (usize, usize) {
+    (grid[0].len(), grid.len())
 }
 
 /// Visualize a vector of points in the 2D space, representing points as the
