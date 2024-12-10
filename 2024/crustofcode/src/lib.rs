@@ -53,7 +53,7 @@ pub fn drop_prefix<'a>(s: &'a str, prefix: &str) -> &'a str {
 }
 
 // ----------------------------- Points and grids -----------------------------
-pub type Point = (i64, i64);
+pub type Point = (isize, isize);
 pub type UPoint = (usize, usize);
 
 pub fn up2p((x, y): UPoint) -> Point {
@@ -72,6 +72,13 @@ pub fn get_dimensions<T>(grid: &Vec<Vec<T>>) -> (usize, usize) {
     (grid[0].len(), grid.len())
 }
 
+/// Given two positions p, q: UPoint, returns the direction p->q
+pub fn direction(p: &UPoint, q: &UPoint) -> Point {
+    let p = up2p(*p);
+    let q = up2p(*q);
+    return (q.0 - p.0, q.1 - p.1);
+}
+
 /// Visualize a vector of points in the 2D space, representing points as the
 /// attached character
 pub fn visualize_as<I>(points: I)
@@ -82,8 +89,8 @@ where
         .sorted_by(|((x1, y1), _), ((x2, y2), _)| y1.cmp(y2).then(x1.cmp(x2)))
         .dedup_by(|(p1, _), (p2, _)| p1 == p2)
         .collect();
-    let maxx: i64 = *sorted.iter().map(|((x, _), _)| x).max().unwrap();
-    let maxy: i64 = *sorted.iter().map(|((_, y), _)| y).max().unwrap();
+    let maxx: isize = *sorted.iter().map(|((x, _), _)| x).max().unwrap();
+    let maxy: isize = *sorted.iter().map(|((_, y), _)| y).max().unwrap();
 
     let mut x = 0;
     let mut y = 0;
