@@ -21,31 +21,6 @@ pub fn str2int<S: AsRef<str>>(s: S) -> i64 {
         .expect("String parsable to number expected")
 }
 
-pub fn lines_owned(s: String) -> Vec<String> {
-    s.lines().map(|s| s.to_owned()).collect()
-}
-
-/// Read an input file (specified as the first CLI argument) and returns a
-/// vector with its lines (owned)
-pub fn read_input_lines() -> Vec<String> {
-    lines_owned(read_input())
-}
-
-/// Parse a string as an integer per line, and returns the resulting vector.
-///
-/// # Example
-/// ```
-/// use crustofcode::lines_to_ints;
-///
-/// let content = String::from("1\n2\n42");
-/// let nums = lines_to_ints(content);
-///
-/// assert_eq!(nums, [1, 2, 42]);
-/// ```
-pub fn lines_to_ints(content: String) -> Vec<i64> {
-    content.lines().map(str2int).collect()
-}
-
 pub fn drop_prefix<'a>(s: &'a str, prefix: &str) -> &'a str {
     let l = prefix.chars().count();
     assert_eq!(&s[0..l], prefix.to_string());
@@ -83,9 +58,10 @@ pub fn direction(p: &UPoint, q: &UPoint) -> Point {
 /// attached character
 pub fn visualize_as<I>(points: I)
 where
-    I: Iterator<Item = (Point, char)>,
+    I: IntoIterator<Item = (Point, char)>,
 {
     let sorted: Vec<(Point, char)> = points
+        .into_iter()
         .sorted_by(|((x1, y1), _), ((x2, y2), _)| y1.cmp(y2).then(x1.cmp(x2)))
         .dedup_by(|(p1, _), (p2, _)| p1 == p2)
         .collect();
@@ -114,9 +90,9 @@ where
 /// Visualize a vector of points in the 2D space as █
 pub fn visualize<'a, I>(points: I)
 where
-    I: Iterator<Item = &'a Point>,
+    I: IntoIterator<Item = &'a Point>,
 {
-    visualize_as(points.map(|&p| (p, '█')));
+    visualize_as(points.into_iter().map(|&p| (p, '█')));
 }
 
 /// Visualize a grid of bools
