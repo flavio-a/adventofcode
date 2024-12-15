@@ -213,6 +213,15 @@ impl Dir4 {
         }
     }
 
+    pub fn is_vertical(&self) -> bool {
+        match &self {
+            Dir4::U => true,
+            Dir4::D => true,
+            Dir4::L => false,
+            Dir4::R => false,
+        }
+    }
+
     // Add a dir to a Point, staying inside the bounds
     pub fn move_point(&self, (i, j): UPoint, h: usize, w: usize) -> Option<UPoint> {
         match self {
@@ -220,6 +229,18 @@ impl Dir4 {
             Dir4::L => (j > 0).then(|| (i, j - 1)),
             Dir4::U => (i > 0).then(|| (i - 1, j)),
             Dir4::D => (i + 1 < h).then(|| (i + 1, j)),
+        }
+    }
+}
+
+impl From<char> for Dir4 {
+    fn from(c: char) -> Self {
+        match c {
+            '^' => Dir4::U,
+            '>' => Dir4::R,
+            'v' => Dir4::D,
+            '<' => Dir4::L,
+            _ => panic!("Unexpected char"),
         }
     }
 }
