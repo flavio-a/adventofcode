@@ -213,7 +213,16 @@ impl Dir4 {
         }
     }
 
-    pub fn is_vertical(&self) -> bool {
+    pub const fn turn_left(&self) -> Self {
+        match self {
+            Dir4::D => Dir4::R,
+            Dir4::L => Dir4::D,
+            Dir4::U => Dir4::L,
+            Dir4::R => Dir4::U,
+        }
+    }
+
+    pub const fn is_vertical(&self) -> bool {
         match &self {
             Dir4::U => true,
             Dir4::D => true,
