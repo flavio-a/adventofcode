@@ -1,5 +1,5 @@
 use aoc_parse::{parser, prelude::*};
-use crustofcode::{get_dimensions, neighbours, UPoint};
+use crustofcode::{filtered_neighbours, get_dimensions, neighbours_iter, UPoint};
 use itertools::iproduct;
 use pathfinding::prelude::bfs_reach;
 
@@ -8,10 +8,7 @@ fn compute_score(topomap: &Vec<Vec<u8>>, pos: UPoint) -> usize {
     let successors = |p: &UPoint| {
         let (x, y) = *p;
         // println!("{:?} / {}", p, topomap[x][y]);
-        neighbours(p, h, w)
-            .into_iter()
-            // .inspect(|q| println!("> {:?} / {}", q, topomap[q.0][q.1]))
-            .filter(move |&(i, j)| topomap[i][j] == topomap[x][y] + 1)
+        filtered_neighbours(p, h, w, move |&(i, j)| topomap[i][j] == topomap[x][y] + 1)
     };
     let reachables = bfs_reach(pos, successors);
     return reachables.filter(|&(i, j)| topomap[i][j] == 9).count();
@@ -32,8 +29,7 @@ fn compute_rating(
 
     let (w, h) = get_dimensions(topomap);
     let (x, y) = *pos;
-    let res = neighbours(&pos, h, w)
-        .into_iter()
+    let res = neighbours_iter(&pos, h, w)
         .filter(move |&(i, j)| topomap[i][j] == topomap[x][y] + 1)
         .map(|p| compute_rating(topomap, memoize, &p))
         .sum();

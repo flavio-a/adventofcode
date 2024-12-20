@@ -1,5 +1,5 @@
 use aoc_parse::{parser, prelude::*};
-use crustofcode::{neighbours, UPoint};
+use crustofcode::{grid_neighbours, UPoint};
 use pathfinding::prelude::bfs;
 
 const DIM: usize = 71;
@@ -20,11 +20,7 @@ fn main() {
     }
     let mut path = bfs(
         &(0, 0),
-        |p| {
-            neighbours(p, DIM, DIM)
-                .into_iter()
-                .filter(|&(x, y)| !grid[x][y])
-        },
+        |p| grid_neighbours(p, &grid),
         |&(i, j)| i == DIM - 1 && j == DIM - 1,
     );
     let res1 = path.as_ref().unwrap().len() - 1;
@@ -41,11 +37,7 @@ fn main() {
         grid[rocks[i].0][rocks[i].1] = true;
         path = bfs(
             &(0, 0),
-            |p| {
-                neighbours(p, DIM, DIM)
-                    .into_iter()
-                    .filter(|&(x, y)| !grid[x][y])
-            },
+            |p| grid_neighbours(p, &grid),
             |&(i, j)| i == DIM - 1 && j == DIM - 1,
         );
     }

@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use aoc_parse::{parser, prelude::*};
-use crustofcode::{get_dimensions, neighbours, Dir4, UPoint};
+use crustofcode::{filtered_neighbours, get_dimensions, neighbours_iter, Dir4, UPoint};
 use itertools::iproduct;
 use pathfinding::prelude::connected_components;
 
@@ -47,17 +47,14 @@ fn main() {
         &iproduct!((0..h), (0..w)).collect::<Vec<UPoint>>(),
         |&(i, j)| {
             let kind = &garden[i][j];
-            neighbours(&(i, j), h, w)
-                .into_iter()
-                .filter(|&(x, y)| garden[x][y] == *kind)
+            filtered_neighbours(&(i, j), h, w, |&(x, y)| garden[x][y] == *kind)
         },
     );
 
     // Part 1
     let mut cell_perimeter = vec![vec![0; w]; h];
     for (i, j) in iproduct!((0..h), (0..w)) {
-        cell_perimeter[i][j] = 4 - neighbours(&(i, j), h, w)
-            .into_iter()
+        cell_perimeter[i][j] = 4 - neighbours_iter(&(i, j), h, w)
             .filter(|&(x, y)| garden[x][y] == garden[i][j])
             .count();
     }
