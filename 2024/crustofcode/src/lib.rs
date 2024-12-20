@@ -35,11 +35,44 @@ pub fn up2p((x, y): UPoint) -> Point {
     (x.try_into().unwrap(), y.try_into().unwrap())
 }
 
-pub fn neighbours(p: &UPoint, h: usize, w: usize) -> Vec<UPoint> {
+pub fn manhattan_distance((px, py): &UPoint, (qx, qy): &UPoint) -> usize {
+    px.abs_diff(*qx) + py.abs_diff(*qy)
+}
+
+pub fn neighbours_iter<'a>(
+    p: &'a UPoint,
+    h: usize,
+    w: usize,
+) -> impl Iterator<Item = UPoint> + use<'a> {
     Dir4::ALL_DIRS
         .iter()
-        .filter_map(|d| d.move_point(*p, h, w))
-        .collect()
+        .filter_map(move |d| d.move_point(*p, h, w))
+}
+
+pub fn neighbours(p: &UPoint, h: usize, w: usize) -> Vec<UPoint> {
+    neighbours_iter(p, h, w).collect()
+}
+
+/// Gets neighbours of a point, excluding those not matching a condition
+pub fn filtered_neighbours<P: FnMut(&UPoint) -> bool>(
+    p: &UPoint,
+    h: usize,
+    w: usize,
+    pred: P,
+) -> std::iter::Filter<impl Iterator<Item = UPoint>, P> {
+    neighbours_iter(p, h, w)
+        .collect_vec()
+        .into_iter()
+        .filter(pred)
+}
+
+/// Gets neighbours of a point that are not in a grid wall
+pub fn grid_neighbours<'a>(
+    p: &UPoint,
+    grid: &'a Vec<Vec<bool>>,
+) -> impl Iterator<Item = UPoint> + use<'a> {
+    let (w, h) = get_dimensions(grid);
+    filtered_neighbours(p, h, w, |(i, j)| !grid[*i][*j])
 }
 
 /// Returns the pair (w, h) needed for other grid operations
