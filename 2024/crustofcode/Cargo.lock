@@ -32,10 +32,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ace50bade8e6234aa140d9a2f552bbee1db4d353f69b8217bc503490fc1a9f26"
 
 [[package]]
+name = "circular-buffer"
+version = "0.1.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b67261db007b5f4cf8cba393c1a5c511a5cc072339ce16e12aeba1d7b9b77946"
+
+[[package]]
 name = "crustofcode"
 version = "0.1.0"
 dependencies = [
  "aoc-parse",
+ "circular-buffer",
  "either",
  "itertools",
  "num",
