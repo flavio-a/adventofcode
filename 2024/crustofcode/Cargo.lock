@@ -36,6 +36,7 @@ name = "crustofcode"
 version = "0.1.0"
 dependencies = [
  "aoc-parse",
+ "either",
  "itertools",
  "num",
  "pathfinding",

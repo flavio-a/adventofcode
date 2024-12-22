@@ -69,14 +69,14 @@ pub fn filtered_neighbours<P: FnMut(&UPoint) -> bool>(
 /// Gets neighbours of a point that are not in a grid wall
 pub fn grid_neighbours<'a>(
     p: &UPoint,
-    grid: &'a Vec<Vec<bool>>,
+    grid: &'a [Vec<bool>],
 ) -> impl Iterator<Item = UPoint> + use<'a> {
     let (w, h) = get_dimensions(grid);
     filtered_neighbours(p, h, w, |(i, j)| !grid[*i][*j])
 }
 
 /// Returns the pair (w, h) needed for other grid operations
-pub fn get_dimensions<T>(grid: &Vec<Vec<T>>) -> (usize, usize) {
+pub fn get_dimensions<T>(grid: &[Vec<T>]) -> (usize, usize) {
     (grid[0].len(), grid.len())
 }
 
@@ -129,7 +129,7 @@ where
 }
 
 /// Visualize a grid of bools
-pub fn visualize_grid(points: &Vec<Vec<bool>>) {
+pub fn visualize_grid(points: &[Vec<bool>]) {
     for line in points.iter() {
         for &dot in line.iter() {
             if dot {
@@ -145,7 +145,7 @@ pub fn visualize_grid(points: &Vec<Vec<bool>>) {
 }
 
 /// Visualize a grid of values given a function to display them
-pub fn visualize_grid_t<T, F>(points: &Vec<Vec<T>>, f: F)
+pub fn visualize_grid_t<T, F>(points: &[Vec<T>], f: F)
 where
     F: Fn(&T) -> char,
 {
@@ -158,7 +158,7 @@ where
 }
 
 /// Count the number of true cells in a grid
-pub fn count_true(board: &Vec<Vec<bool>>) -> usize {
+pub fn count_true(board: &[Vec<bool>]) -> usize {
     board
         .iter()
         .map(|r| {
@@ -283,6 +283,17 @@ impl From<char> for Dir4 {
             'v' => Dir4::D,
             '<' => Dir4::L,
             _ => panic!("Unexpected char"),
+        }
+    }
+}
+
+impl Into<char> for Dir4 {
+    fn into(self) -> char {
+        match self {
+            Dir4::U => '^',
+            Dir4::R => '>',
+            Dir4::D => 'v',
+            Dir4::L => '<',
         }
     }
 }
